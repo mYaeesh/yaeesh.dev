@@ -20,6 +20,7 @@
     html { height: 100%; }
 
     body {
+      position: relative;
       min-height: 100%;
       min-height: 100dvh;
       background: var(--bg);
@@ -30,30 +31,49 @@
       flex-direction: column;
     }
 
-    /* ── Header ──────────────────────────────────────────────── */
+    /* ── Header — floats over hero so centering is y=0 to bottom bar ── */
 
     .header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
       padding: 1.5rem 2rem;
-      flex-shrink: 0;
+      z-index: 10;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
+
     .logo {
       font-size: 0.78rem;
       font-weight: 500;
       letter-spacing: 0.06em;
       color: var(--text-muted);
       text-decoration: none;
+      pointer-events: auto;
       transition: color 0.15s;
     }
     .logo:hover { color: var(--text-sub); }
 
-    /* ── Hero ────────────────────────────────────────────────── */
+    .kbd-hint {
+      font-size: 0.58rem;
+      font-weight: 400;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      opacity: 0.7;
+    }
+
+    /* ── Hero — takes full column above bottom bar, true centering ─── */
 
     .hero {
       flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 1rem 2.5rem 2.5rem;
+      padding: 1rem 2rem; /* equal top/bottom = no centering offset */
     }
 
     .main-wrap {
@@ -62,7 +82,7 @@
     }
     .main-wrap.exit { opacity: 0; }
 
-    /* ── Exam label & date ───────────────────────────────────── */
+    /* ── Exam label & date ───────────────────────────────────────────── */
 
     .exam-label {
       font-size: 0.68rem;
@@ -74,30 +94,31 @@
     }
 
     .exam-date {
-      font-size: 0.75rem;
+      font-size: 0.78rem;
       color: var(--text-muted);
       letter-spacing: 0.03em;
-      margin-bottom: clamp(2rem, 5vh, 4rem);
+      margin-bottom: clamp(2rem, 5vh, 4.5rem);
     }
 
-    /* ── Digits ──────────────────────────────────────────────── */
+    /* ── Digits ──────────────────────────────────────────────────────── */
 
     .digits-row {
       display: flex;
       align-items: flex-end;
       justify-content: center;
-      gap: clamp(1.25rem, 4vw, 3.5rem);
+      gap: clamp(1rem, 3.5vw, 3rem);
     }
 
     .digit-unit {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.7rem;
+      gap: 0.9rem;
     }
 
     .digit-num {
-      font-size: clamp(3.2rem, 13vw, 9.5rem);
+      /* Bigger than before — was clamp(3.2rem, 13vw, 9.5rem) */
+      font-size: clamp(3.8rem, 16vw, 12.5rem);
       font-weight: 700;
       font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', ui-monospace, Consolas, monospace;
       line-height: 0.88;
@@ -108,15 +129,16 @@
     }
 
     .digit-label {
-      font-size: clamp(0.52rem, 0.95vw, 0.63rem);
-      font-weight: 400;
-      letter-spacing: 0.2em;
+      /* More visible — was text-muted, tiny, light weight */
+      font-size: clamp(0.62rem, 1.1vw, 0.78rem);
+      font-weight: 500;
+      letter-spacing: 0.16em;
       text-transform: uppercase;
-      color: var(--text-muted);
+      color: var(--text-sub);
       line-height: 1;
     }
 
-    /* ── Bottom bar — all 3 exams ────────────────────────────── */
+    /* ── Bottom bar — all 3 exams ────────────────────────────────────── */
 
     .bottom {
       flex-shrink: 0;
@@ -139,14 +161,11 @@
       gap: 0.25rem;
       outline: none;
       transition: background 0.15s;
-      /* Active indicator via inset box-shadow — no layout shift */
       box-shadow: none;
     }
     .exam-card + .exam-card { border-left: 1px solid var(--border); }
 
-    .exam-card.active {
-      box-shadow: inset 0 2px 0 var(--amber);
-    }
+    .exam-card.active      { box-shadow: inset 0 2px 0 var(--amber); }
     .exam-card:not(.active):hover { background: rgba(255,255,255,0.02); }
     .exam-card:focus-visible      { background: rgba(255,255,255,0.03); outline: 1px solid var(--border); }
     .exam-card:active             { background: rgba(255,255,255,0.01); }
@@ -174,7 +193,7 @@
       margin-top: 0.05rem;
     }
 
-    /* ── All done ────────────────────────────────────────────── */
+    /* ── All done ────────────────────────────────────────────────────── */
 
     .all-done {
       text-align: center;
@@ -186,18 +205,15 @@
       letter-spacing: -0.025em;
       margin-bottom: 0.5rem;
     }
-    .all-done p {
-      font-size: 0.875rem;
-      color: var(--text-sub);
-      line-height: 1.65;
-    }
+    .all-done p { font-size: 0.875rem; color: var(--text-sub); line-height: 1.65; }
 
-    /* ── Responsive ──────────────────────────────────────────── */
+    /* ── Responsive ──────────────────────────────────────────────────── */
 
     @media (max-width: 500px) {
-      .header  { padding: 1.1rem 1.25rem; }
-      .hero    { padding: 1rem 1.25rem 2rem; }
+      .header    { padding: 1.1rem 1.25rem; }
+      .hero      { padding: 1rem; }
       .exam-card { min-width: 130px; padding: 0.9rem 1.1rem; }
+      .kbd-hint  { display: none; }
     }
   </style>
 </head>
@@ -205,6 +221,7 @@
 
 <header class="header">
   <a href="/" class="logo">yaeesh.dev</a>
+  <span class="kbd-hint" aria-hidden="true">F &mdash; fullscreen</span>
 </header>
 
 <main class="hero">
@@ -217,28 +234,32 @@
 (function () {
   'use strict';
 
-  /* ── Data ─────────────────────────────────────────────────── */
-  // All times MVT (UTC+5). utcMs = MVT time minus 5 hours.
+  /* ── Data ────────────────────────────────────────────────────── */
+  // All times MVT (UTC+5). utcMs = MVT − 5 h.
 
   var EXAMS = [
-    { id: 'term-test',  name: 'Term Test',      utcMs: Date.UTC(2026, 5, 30, 2, 10, 0),  display: '30 Jun 2026 · 7:10 AM MVT'  },
-    { id: 'mock-exams', name: 'Mock Exams',     utcMs: Date.UTC(2026, 8,  1, 4, 30, 0),  display: '1 Sep 2026 · 9:30 AM MVT'   },
-    { id: 'o-level',    name: 'O‑Level & SSE', utcMs: Date.UTC(2026, 8, 20, 4, 30, 0),  display: '20 Sep 2026 · 9:30 AM MVT'  },
+    { id: 'term-test',  name: 'Term Test',      utcMs: Date.UTC(2026, 5, 30, 2, 10, 0), display: '30 Jun 2026 · 7:10 AM MVT'  },
+    { id: 'mock-exams', name: 'Mock Exams',     utcMs: Date.UTC(2026, 8,  1, 4, 30, 0), display: '1 Sep 2026 · 9:30 AM MVT'   },
+    { id: 'o-level',    name: 'O‑Level & SSE', utcMs: Date.UTC(2026, 8, 20, 4, 30, 0), display: '20 Sep 2026 · 9:30 AM MVT' },
   ];
 
   var DEFAULT_ID  = 'o-level';
   var STORAGE_KEY = 'exam-countdown-selected';
 
-  /* ── State ────────────────────────────────────────────────── */
+  /* ── State ───────────────────────────────────────────────────── */
 
   var selectedId    = null;
   var transitioning = false;
   var timer         = null;
 
-  /* ── Utils ────────────────────────────────────────────────── */
+  /* ── Utils ───────────────────────────────────────────────────── */
 
   function esc(s) {
-    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    return s
+      .replace(/&/g,  '&amp;')
+      .replace(/</g,  '&lt;')
+      .replace(/>/g,  '&gt;')
+      .replace(/"/g,  '&quot;');
   }
 
   function getActive() {
@@ -278,7 +299,7 @@
     return cd.m + 'm ' + pad2(cd.s) + 's';
   }
 
-  /* ── Render: main ─────────────────────────────────────────── */
+  /* ── Render: main ────────────────────────────────────────────── */
 
   function mainHTML(exam) {
     var cd = calcCd(exam.utcMs) || { d: 0, h: 0, m: 0, s: 0 };
@@ -286,9 +307,9 @@
       '<p class="exam-label">' + esc(exam.name) + '</p>' +
       '<p class="exam-date">'  + esc(exam.display) + '</p>' +
       '<div class="digits-row" role="timer" aria-label="' + esc(exam.name) + ' countdown">' +
-        '<div class="digit-unit"><span class="digit-num" id="d-d">' + pad2(cd.d) + '</span><span class="digit-label">Days</span></div>' +
+        '<div class="digit-unit"><span class="digit-num" id="d-d">' + pad2(cd.d) + '</span><span class="digit-label">Days</span></div>'  +
         '<div class="digit-unit"><span class="digit-num" id="d-h">' + pad2(cd.h) + '</span><span class="digit-label">Hours</span></div>' +
-        '<div class="digit-unit"><span class="digit-num" id="d-m">' + pad2(cd.m) + '</span><span class="digit-label">Min</span></div>'  +
+        '<div class="digit-unit"><span class="digit-num" id="d-m">' + pad2(cd.m) + '</span><span class="digit-label">Min</span></div>'   +
         '<div class="digit-unit"><span class="digit-num" id="d-s">' + pad2(cd.s) + '</span><span class="digit-label">Sec</span></div>'   +
       '</div>'
     );
@@ -315,7 +336,7 @@
     }, 200);
   }
 
-  /* ── Render: bottom bar ───────────────────────────────────── */
+  /* ── Render: bottom bar ──────────────────────────────────────── */
 
   function renderBottom(active) {
     var bar = document.getElementById('bottomBar');
@@ -327,9 +348,9 @@
         '<div class="exam-card' + (isActive ? ' active' : '') + '"' +
             ' data-id="' + e.id + '" role="button" tabindex="0"' +
             ' aria-label="' + esc(e.name) + (isActive ? ', currently selected' : '') + '">' +
-          '<span class="card-name">'  + esc(e.name)    + '</span>' +
-          '<span class="card-time" id="c-' + e.id + '">' + compact(e.utcMs) + '</span>' +
-          '<span class="card-date">'  + esc(e.display)  + '</span>' +
+          '<span class="card-name">'                       + esc(e.name)    + '</span>' +
+          '<span class="card-time" id="c-' + e.id + '">'  + compact(e.utcMs) + '</span>' +
+          '<span class="card-date">'                       + esc(e.display) + '</span>' +
         '</div>'
       );
     }).join('');
@@ -342,7 +363,7 @@
     });
   }
 
-  /* ── Switch ───────────────────────────────────────────────── */
+  /* ── Switch ──────────────────────────────────────────────────── */
 
   function switchTo(id) {
     if (transitioning || id === selectedId) return;
@@ -355,7 +376,7 @@
     renderBottom(active);
   }
 
-  /* ── Tick ─────────────────────────────────────────────────── */
+  /* ── Tick ────────────────────────────────────────────────────── */
 
   function tick() {
     var active = getActive();
@@ -374,7 +395,7 @@
       return;
     }
 
-    // Fast-path: update digits without re-render
+    // Fast-path digit update
     if (!transitioning) {
       var curr = active.filter(function (e) { return e.id === selectedId; })[0];
       var cd   = calcCd(curr.utcMs);
@@ -387,7 +408,7 @@
       }
     }
 
-    // Update card compact times + detect expired exams
+    // Update card times; re-render if an exam expired
     var curIds = Array.prototype.map.call(
       document.querySelectorAll('.exam-card'),
       function (c) { return c.dataset.id; }
@@ -403,7 +424,22 @@
     }
   }
 
-  /* ── Init ─────────────────────────────────────────────────── */
+  /* ── Fullscreen (F key) ──────────────────────────────────────── */
+
+  document.addEventListener('keydown', function (e) {
+    // Don't intercept Ctrl/Cmd+F (browser find) or modified combos
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (e.key !== 'f' && e.key !== 'F') return;
+    try {
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      } else {
+        document.documentElement.requestFullscreen();
+      }
+    } catch (_) {}
+  });
+
+  /* ── Init ────────────────────────────────────────────────────── */
 
   function init() {
     var active = getActive();
