@@ -4,6 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Exam Countdown &mdash; yaeesh.dev</title>
+  <meta name="description" content="Live countdown to Term Test, Mock Exams, and O-Level &amp; SSE.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230c0c0b'/><text x='16' y='23' font-family='system-ui,sans-serif' font-size='22' font-weight='700' text-anchor='middle' fill='%23c8913c'>Y</text></svg>">
+  <meta name="color-scheme" content="dark">
+  <meta property="og:title" content="Exam Countdown — yaeesh.dev">
+  <meta property="og:description" content="Live countdown to Term Test, Mock Exams, and O-Level &amp; SSE.">
+  <meta property="og:url" content="https://yaeesh.dev/exam-countdown">
+  <meta property="og:type" content="website">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -73,7 +80,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 1rem 2rem; /* equal top/bottom = no centering offset */
+      padding: 1rem 2rem;
     }
 
     .main-wrap {
@@ -117,7 +124,6 @@
     }
 
     .digit-num {
-      /* Bigger than before — was clamp(3.2rem, 13vw, 9.5rem) */
       font-size: clamp(3.8rem, 16vw, 12.5rem);
       font-weight: 700;
       font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', ui-monospace, Consolas, monospace;
@@ -129,7 +135,6 @@
     }
 
     .digit-label {
-      /* More visible — was text-muted, tiny, light weight */
       font-size: clamp(0.62rem, 1.1vw, 0.78rem);
       font-weight: 500;
       letter-spacing: 0.16em;
@@ -193,6 +198,48 @@
       margin-top: 0.05rem;
     }
 
+    /* ── Progress bar ────────────────────────────────────────────────── */
+
+    .card-progress {
+      margin-top: 0.55rem;
+      height: 2px;
+      background: var(--border);
+      border-radius: 1px;
+      overflow: hidden;
+    }
+    .card-progress-fill {
+      height: 100%;
+      background: var(--amber);
+      border-radius: 1px;
+      opacity: 0.4;
+    }
+    .exam-card.active .card-progress-fill { opacity: 0.85; }
+
+    /* ── Toast ────────────────────────────────────────────────────────── */
+
+    .toast {
+      position: fixed;
+      bottom: 7rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(0.5rem);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-sub);
+      font-size: 0.75rem;
+      letter-spacing: 0.03em;
+      padding: 0.55rem 1rem;
+      border-radius: 6px;
+      opacity: 0;
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 200;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
     /* ── All done ────────────────────────────────────────────────────── */
 
     .all-done {
@@ -214,6 +261,7 @@
       .hero      { padding: 1rem; }
       .exam-card { min-width: 130px; padding: 0.9rem 1.1rem; }
       .kbd-hint  { display: none; }
+      .digits-row { gap: 0.75rem; }
     }
   </style>
 </head>
@@ -221,7 +269,7 @@
 
 <header class="header">
   <a href="/" class="logo">yaeesh.dev</a>
-  <span class="kbd-hint" aria-hidden="true">F &mdash; fullscreen</span>
+  <span class="kbd-hint" aria-hidden="true">&#8592; &#8594; switch &nbsp;&middot;&nbsp; F fullscreen</span>
 </header>
 
 <main class="hero">
@@ -229,18 +277,19 @@
 </main>
 
 <div class="bottom" id="bottomBar"></div>
+<div class="toast" id="toast" aria-live="polite"></div>
 
 <script>
 (function () {
   'use strict';
 
   /* ── Data ────────────────────────────────────────────────────── */
-  // All times MVT (UTC+5). utcMs = MVT − 5 h.
+  // All times MVT (UTC+5). utcMs = MVT − 5 h. startMs = when countdown began.
 
   var EXAMS = [
-    { id: 'term-test',  name: 'Term Test',      utcMs: Date.UTC(2026, 5, 30, 2, 10, 0), display: '30 Jun 2026 · 7:10 AM MVT'  },
-    { id: 'mock-exams', name: 'Mock Exams',     utcMs: Date.UTC(2026, 8,  1, 4, 30, 0), display: '1 Sep 2026 · 9:30 AM MVT'   },
-    { id: 'o-level',    name: 'O‑Level & SSE', utcMs: Date.UTC(2026, 8, 20, 4, 30, 0), display: '20 Sep 2026 · 9:30 AM MVT' },
+    { id: 'term-test',  name: 'Term Test',      startMs: Date.UTC(2026, 3,  1, 0, 0, 0), utcMs: Date.UTC(2026, 5, 30, 2, 10, 0), display: '30 Jun 2026 · 7:10 AM MVT'  },
+    { id: 'mock-exams', name: 'Mock Exams',     startMs: Date.UTC(2026, 5,  1, 0, 0, 0), utcMs: Date.UTC(2026, 8,  1, 4, 30, 0), display: '1 Sep 2026 · 9:30 AM MVT'   },
+    { id: 'o-level',    name: 'O‑Level & SSE', startMs: Date.UTC(2026, 5,  1, 0, 0, 0), utcMs: Date.UTC(2026, 8, 20, 4, 30, 0), display: '20 Sep 2026 · 9:30 AM MVT'  },
   ];
 
   var DEFAULT_ID  = 'o-level';
@@ -251,6 +300,8 @@
   var selectedId    = null;
   var transitioning = false;
   var timer         = null;
+  var prevActiveIds = null;
+  var toastTimer    = null;
 
   /* ── Utils ───────────────────────────────────────────────────── */
 
@@ -291,12 +342,29 @@
     return { d: d, h: h % 24, m: m % 60, s: s % 60 };
   }
 
+  function calcProgress(e) {
+    var now = Date.now();
+    if (now <= e.startMs) return 0;
+    if (now >= e.utcMs)   return 100;
+    return Math.round((now - e.startMs) / (e.utcMs - e.startMs) * 100);
+  }
+
   function compact(utcMs) {
     var cd = calcCd(utcMs);
     if (!cd) return '—';
     if (cd.d > 0) return cd.d + 'd ' + pad2(cd.h) + 'h ' + pad2(cd.m) + 'm ' + pad2(cd.s) + 's';
     if (cd.h > 0) return cd.h + 'h ' + pad2(cd.m) + 'm ' + pad2(cd.s) + 's';
     return cd.m + 'm ' + pad2(cd.s) + 's';
+  }
+
+  /* ── Toast ───────────────────────────────────────────────────── */
+
+  function showToast(msg) {
+    var el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.classList.remove('show'); }, 3000);
   }
 
   /* ── Render: main ────────────────────────────────────────────── */
@@ -344,13 +412,15 @@
 
     bar.innerHTML = active.map(function (e) {
       var isActive = e.id === selectedId;
+      var pct = calcProgress(e);
       return (
         '<div class="exam-card' + (isActive ? ' active' : '') + '"' +
             ' data-id="' + e.id + '" role="button" tabindex="0"' +
             ' aria-label="' + esc(e.name) + (isActive ? ', currently selected' : '') + '">' +
-          '<span class="card-name">'                       + esc(e.name)    + '</span>' +
+          '<span class="card-name">'                       + esc(e.name)      + '</span>' +
           '<span class="card-time" id="c-' + e.id + '">'  + compact(e.utcMs) + '</span>' +
-          '<span class="card-date">'                       + esc(e.display) + '</span>' +
+          '<span class="card-date">'                       + esc(e.display)   + '</span>' +
+          '<div class="card-progress"><div class="card-progress-fill" id="p-' + e.id + '" style="width:' + pct + '%"></div></div>' +
         '</div>'
       );
     }).join('');
@@ -381,6 +451,17 @@
   function tick() {
     var active = getActive();
 
+    // Toast when an exam passes mid-session
+    if (prevActiveIds !== null) {
+      prevActiveIds.forEach(function (id) {
+        if (!active.some(function (e) { return e.id === id; })) {
+          var gone = EXAMS.filter(function (e) { return e.id === id; })[0];
+          if (gone) showToast(gone.name + ' has passed');
+        }
+      });
+    }
+    prevActiveIds = active.map(function (e) { return e.id; });
+
     if (!active.length) {
       clearInterval(timer); timer = null;
       renderMain(null, false);
@@ -408,7 +489,7 @@
       }
     }
 
-    // Update card times; re-render if an exam expired
+    // Update card times and progress bars; re-render if the active set changed
     var curIds = Array.prototype.map.call(
       document.querySelectorAll('.exam-card'),
       function (c) { return c.dataset.id; }
@@ -418,25 +499,40 @@
       renderBottom(active);
     } else {
       active.forEach(function (e) {
-        var el = document.getElementById('c-' + e.id);
-        if (el) el.textContent = compact(e.utcMs);
+        var ct = document.getElementById('c-' + e.id);
+        if (ct) ct.textContent = compact(e.utcMs);
+        var pf = document.getElementById('p-' + e.id);
+        if (pf) pf.style.width = calcProgress(e) + '%';
       });
     }
   }
 
-  /* ── Fullscreen (F key) ──────────────────────────────────────── */
+  /* ── Keyboard shortcuts ──────────────────────────────────────── */
 
   document.addEventListener('keydown', function (e) {
-    // Don't intercept Ctrl/Cmd+F (browser find) or modified combos
     if (e.ctrlKey || e.metaKey || e.altKey) return;
-    if (e.key !== 'f' && e.key !== 'F') return;
-    try {
-      if (document.fullscreenElement) {
-        document.exitFullscreen();
-      } else {
-        document.documentElement.requestFullscreen();
+
+    // F — fullscreen
+    if (e.key === 'f' || e.key === 'F') {
+      try {
+        if (document.fullscreenElement) { document.exitFullscreen(); }
+        else { document.documentElement.requestFullscreen(); }
+      } catch (_) {}
+      return;
+    }
+
+    // ← → — switch exam
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      e.preventDefault();
+      var active = getActive();
+      var idx = -1;
+      for (var i = 0; i < active.length; i++) {
+        if (active[i].id === selectedId) { idx = i; break; }
       }
-    } catch (_) {}
+      if (idx === -1) return;
+      var newIdx = e.key === 'ArrowLeft' ? idx - 1 : idx + 1;
+      if (newIdx >= 0 && newIdx < active.length) switchTo(active[newIdx].id);
+    }
   });
 
   /* ── Init ────────────────────────────────────────────────────── */
@@ -444,7 +540,8 @@
   function init() {
     var active = getActive();
     if (!active.length) { renderMain(null, false); return; }
-    selectedId = resolveId(active); saveId(selectedId);
+    selectedId    = resolveId(active); saveId(selectedId);
+    prevActiveIds = active.map(function (e) { return e.id; });
     renderMain(active.filter(function (e) { return e.id === selectedId; })[0], false);
     renderBottom(active);
     timer = setInterval(tick, 1000);
