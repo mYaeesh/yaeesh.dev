@@ -7,6 +7,7 @@
   <meta name="description" content="Live countdown to Term Test, Mock Exams, and O-Level &amp; SSE.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230c0c0b'/><text x='16' y='23' font-family='system-ui,sans-serif' font-size='22' font-weight='700' text-anchor='middle' fill='%23c8913c'>Y</text></svg>">
   <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#0c0c0b">
   <meta property="og:title" content="Exam Countdown — yaeesh.dev">
   <meta property="og:description" content="Live countdown to Term Test, Mock Exams, and O-Level &amp; SSE.">
   <meta property="og:url" content="https://yaeesh.dev/exam-countdown">
@@ -30,7 +31,8 @@
       position: relative;
       min-height: 100%;
       min-height: 100dvh;
-      background: var(--bg);
+      background-color: var(--bg);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
       color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
       -webkit-font-smoothing: antialiased;
@@ -38,7 +40,7 @@
       flex-direction: column;
     }
 
-    /* ── Header — floats over hero so centering is y=0 to bottom bar ── */
+    /* ── Header ──────────────────────────────────────────────────── */
 
     .header {
       position: absolute;
@@ -64,6 +66,30 @@
     }
     .logo:hover { color: var(--text-sub); }
 
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      pointer-events: auto;
+    }
+
+    .share-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 0.68rem;
+      font-family: inherit;
+      letter-spacing: 0.06em;
+      padding: 0.25rem 0;
+      transition: color 0.15s;
+    }
+    .share-btn:hover  { color: var(--text-sub); }
+    .share-btn.copied { color: var(--amber); }
+
     .kbd-hint {
       font-size: 0.58rem;
       font-weight: 400;
@@ -73,7 +99,7 @@
       opacity: 0.7;
     }
 
-    /* ── Hero — takes full column above bottom bar, true centering ─── */
+    /* ── Hero ────────────────────────────────────────────────────── */
 
     .hero {
       flex: 1;
@@ -89,7 +115,7 @@
     }
     .main-wrap.exit { opacity: 0; }
 
-    /* ── Exam label & date ───────────────────────────────────────────── */
+    /* ── Exam label & date ───────────────────────────────────────── */
 
     .exam-label {
       font-size: 0.68rem;
@@ -107,7 +133,7 @@
       margin-bottom: clamp(2rem, 5vh, 4.5rem);
     }
 
-    /* ── Digits ──────────────────────────────────────────────────────── */
+    /* ── Digits ──────────────────────────────────────────────────── */
 
     .digits-row {
       display: flex;
@@ -143,7 +169,7 @@
       line-height: 1;
     }
 
-    /* ── Bottom bar — all 3 exams ────────────────────────────────────── */
+    /* ── Bottom bar ──────────────────────────────────────────────── */
 
     .bottom {
       flex-shrink: 0;
@@ -170,7 +196,7 @@
     }
     .exam-card + .exam-card { border-left: 1px solid var(--border); }
 
-    .exam-card.active      { box-shadow: inset 0 2px 0 var(--amber); }
+    .exam-card.active             { box-shadow: inset 0 2px 0 var(--amber); }
     .exam-card:not(.active):hover { background: rgba(255,255,255,0.02); }
     .exam-card:focus-visible      { background: rgba(255,255,255,0.03); outline: 1px solid var(--border); }
     .exam-card:active             { background: rgba(255,255,255,0.01); }
@@ -198,7 +224,7 @@
       margin-top: 0.05rem;
     }
 
-    /* ── Progress bar ────────────────────────────────────────────────── */
+    /* ── Progress bar ────────────────────────────────────────────── */
 
     .card-progress {
       margin-top: 0.55rem;
@@ -215,7 +241,7 @@
     }
     .exam-card.active .card-progress-fill { opacity: 0.85; }
 
-    /* ── Toast ────────────────────────────────────────────────────────── */
+    /* ── Toast ───────────────────────────────────────────────────── */
 
     .toast {
       position: fixed;
@@ -240,7 +266,7 @@
       transform: translateX(-50%) translateY(0);
     }
 
-    /* ── All done ────────────────────────────────────────────────────── */
+    /* ── All done ────────────────────────────────────────────────── */
 
     .all-done {
       text-align: center;
@@ -254,7 +280,7 @@
     }
     .all-done p { font-size: 0.875rem; color: var(--text-sub); line-height: 1.65; }
 
-    /* ── Responsive ──────────────────────────────────────────────────── */
+    /* ── Responsive ──────────────────────────────────────────────── */
 
     @media (max-width: 500px) {
       .header    { padding: 1.1rem 1.25rem; }
@@ -269,7 +295,15 @@
 
 <header class="header">
   <a href="/" class="logo">yaeesh.dev</a>
-  <span class="kbd-hint" aria-hidden="true">&#8592; &#8594; switch &nbsp;&middot;&nbsp; F fullscreen</span>
+  <div class="header-right">
+    <button class="share-btn" id="shareBtn" aria-label="Copy link to this page">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+      </svg>
+      <span id="shareLabel">Share</span>
+    </button>
+    <span class="kbd-hint" aria-hidden="true">&#8592; &#8594; switch &nbsp;&middot;&nbsp; F fullscreen</span>
+  </div>
 </header>
 
 <main class="hero">
@@ -302,6 +336,7 @@
   var timer         = null;
   var prevActiveIds = null;
   var toastTimer    = null;
+  var shareCopyTimer = null;
 
   /* ── Utils ───────────────────────────────────────────────────── */
 
@@ -365,6 +400,27 @@
     el.classList.add('show');
     clearTimeout(toastTimer);
     toastTimer = setTimeout(function () { el.classList.remove('show'); }, 3000);
+  }
+
+  /* ── Share button ────────────────────────────────────────────── */
+
+  var shareBtn   = document.getElementById('shareBtn');
+  var shareLabel = document.getElementById('shareLabel');
+
+  if (shareBtn) {
+    shareBtn.addEventListener('click', function () {
+      try {
+        navigator.clipboard.writeText('https://yaeesh.dev/exam-countdown').then(function () {
+          shareBtn.classList.add('copied');
+          shareLabel.textContent = 'Copied!';
+          clearTimeout(shareCopyTimer);
+          shareCopyTimer = setTimeout(function () {
+            shareBtn.classList.remove('copied');
+            shareLabel.textContent = 'Share';
+          }, 2000);
+        });
+      } catch (_) {}
+    });
   }
 
   /* ── Render: main ────────────────────────────────────────────── */
@@ -489,7 +545,7 @@
       }
     }
 
-    // Update card times and progress bars; re-render if the active set changed
+    // Update card times and progress bars; re-render if active set changed
     var curIds = Array.prototype.map.call(
       document.querySelectorAll('.exam-card'),
       function (c) { return c.dataset.id; }

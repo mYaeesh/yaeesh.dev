@@ -7,6 +7,7 @@
   <meta name="description" content="Yaeesh's personal site.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230c0c0b'/><text x='16' y='23' font-family='system-ui,sans-serif' font-size='22' font-weight='700' text-anchor='middle' fill='%23c8913c'>Y</text></svg>">
   <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#0c0c0b">
   <meta property="og:title" content="Yaeesh">
   <meta property="og:description" content="I'll put some stuff here eventually.">
   <meta property="og:url" content="https://yaeesh.dev">
@@ -18,7 +19,6 @@
       padding: 0;
     }
 
-    /* Same warm dark palette as exam-countdown */
     :root {
       --bg:          #0c0c0b;
       --surface:     #141311;
@@ -37,7 +37,8 @@
     body {
       min-height: 100%;
       min-height: 100dvh;
-      background: var(--bg);
+      background-color: var(--bg);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
       color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
       -webkit-font-smoothing: antialiased;
@@ -46,7 +47,7 @@
       justify-content: center;
     }
 
-    /* ── Entrance animation ──────────────────────────────────── */
+    /* ── Entrance animation ──────────────────────────────────────── */
 
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(8px); }
@@ -92,6 +93,11 @@
       flex-wrap: wrap;
     }
 
+    .btn-primary-wrap {
+      position: relative;
+      display: inline-flex;
+    }
+
     .btn-primary {
       display: inline-flex;
       align-items: center;
@@ -135,6 +141,61 @@
       transform: translateY(-1px);
     }
     .btn-ghost:active { transform: translateY(0); }
+
+    /* ── Exam preview tooltip ────────────────────────────────── */
+
+    .exam-preview {
+      position: absolute;
+      bottom: calc(100% + 0.7rem);
+      left: 50%;
+      transform: translateX(-50%) translateY(4px);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.6rem 0.85rem;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s, transform 0.15s;
+      z-index: 10;
+      text-align: left;
+    }
+    .exam-preview.visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    .exam-preview::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: var(--border);
+    }
+    .preview-label {
+      display: block;
+      font-size: 0.58rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.3rem;
+    }
+    .preview-time {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 600;
+      font-family: 'SF Mono', ui-monospace, Consolas, monospace;
+      color: var(--amber);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.15rem;
+    }
+    .preview-name {
+      display: block;
+      font-size: 0.68rem;
+      color: var(--text-sub);
+    }
 
     /* ── Email ───────────────────────────────────────────────── */
 
@@ -193,12 +254,19 @@
   <h1 class="name">Yaeesh</h1>
   <p class="tagline">I'll put some stuff here eventually</p>
   <div class="links">
-    <a href="/exam-countdown" class="btn-primary">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-      </svg>
-      Exam Countdown
-    </a>
+    <div class="btn-primary-wrap">
+      <a href="/exam-countdown" class="btn-primary">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+        Exam Countdown
+      </a>
+      <div class="exam-preview" id="examPreview" aria-hidden="true">
+        <span class="preview-label">Next up</span>
+        <span class="preview-time" id="previewTime"></span>
+        <span class="preview-name" id="previewName"></span>
+      </div>
+    </div>
     <a href="https://github.com/mYaeesh" class="btn-ghost" target="_blank" rel="noopener noreferrer">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.604-3.369-1.342-3.369-1.342-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.741 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
@@ -215,6 +283,8 @@
 <script>
 (function () {
   'use strict';
+
+  /* ── Cursor ──────────────────────────────────────────────────── */
 
   var dot  = document.getElementById('cursorDot');
   var ring = document.getElementById('cursorRing');
@@ -240,6 +310,59 @@
     el.addEventListener('mouseenter', function () { ring.classList.add('hovered'); });
     el.addEventListener('mouseleave', function () { ring.classList.remove('hovered'); });
   });
+
+  /* ── Exam preview tooltip ────────────────────────────────────── */
+
+  (function () {
+    var EXAMS_HP = [
+      { name: 'Term Test',           utcMs: Date.UTC(2026, 5, 30, 2, 10, 0) },
+      { name: 'Mock Exams',          utcMs: Date.UTC(2026, 8,  1, 4, 30, 0) },
+      { name: 'O‑Level & SSE', utcMs: Date.UTC(2026, 8, 20, 4, 30, 0) },
+    ];
+
+    var previewEl   = document.getElementById('examPreview');
+    var previewTime = document.getElementById('previewTime');
+    var previewName = document.getElementById('previewName');
+    var wrap        = document.querySelector('.btn-primary-wrap');
+    var pInterval   = null;
+
+    if (!previewEl || !wrap) return;
+
+    function nextExam() {
+      var now = Date.now();
+      for (var i = 0; i < EXAMS_HP.length; i++) {
+        if (EXAMS_HP[i].utcMs > now) return EXAMS_HP[i];
+      }
+      return null;
+    }
+
+    function pad2(n) { return n < 10 ? '0' + n : '' + n; }
+
+    function updatePreview() {
+      var exam = nextExam();
+      if (!exam) { previewTime.textContent = 'All done'; previewName.textContent = ''; return; }
+      var diff = exam.utcMs - Date.now();
+      var d = Math.floor(diff / 86400000);
+      var h = Math.floor((diff % 86400000) / 3600000);
+      var m = Math.floor((diff % 3600000) / 60000);
+      var s = Math.floor((diff % 60000) / 1000);
+      previewTime.textContent = d > 0
+        ? d + 'd ' + pad2(h) + 'h ' + pad2(m) + 'm ' + pad2(s) + 's'
+        : h > 0 ? h + 'h ' + pad2(m) + 'm ' + pad2(s) + 's'
+        : m + 'm ' + pad2(s) + 's';
+      previewName.textContent = exam.name;
+    }
+
+    wrap.addEventListener('mouseenter', function () {
+      updatePreview();
+      previewEl.classList.add('visible');
+      pInterval = setInterval(updatePreview, 1000);
+    });
+    wrap.addEventListener('mouseleave', function () {
+      previewEl.classList.remove('visible');
+      clearInterval(pInterval);
+    });
+  }());
 }());
 </script>
 
