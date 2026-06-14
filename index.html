@@ -13,26 +13,19 @@
   <meta property="og:url" content="https://yaeesh.dev">
   <meta property="og:type" content="website">
   <style>
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:          #0c0c0b;
-      --surface:     #141311;
-      --border:      #252220;
-      --text:        #ede9e3;
-      --text-sub:    #8a7e74;
-      --text-muted:  #4e4440;
-      --amber:       #c8913c;
+      --bg:         #0c0c0b;
+      --surface:    #141311;
+      --border:     #252220;
+      --text:       #ede9e3;
+      --text-sub:   #8a7e74;
+      --text-muted: #4e4440;
+      --amber:      #c8913c;
     }
 
-    html {
-      height: 100%;
-      cursor: none;
-    }
+    html { height: 100%; cursor: none; }
 
     body {
       min-height: 100%;
@@ -45,6 +38,110 @@
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+
+    /* ── Page loader overlay ─────────────────────────────────────── */
+
+    .page-loader {
+      position: fixed;
+      inset: 0;
+      z-index: 9000;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.5s ease;
+    }
+    @media (prefers-reduced-motion: reduce) { .page-loader { display: none; } }
+
+    /* ── Terminal window ─────────────────────────────────────────── */
+
+    .terminal-loader {
+      border: 0.1em solid var(--border);
+      background-color: var(--surface);
+      color: var(--amber);
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 1em;
+      width: 13em;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .terminal-header {
+      height: 1.6em;
+      background-color: #1e1c1a;
+      padding: 0 0.5em;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .terminal-title {
+      font-size: 0.72em;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+    }
+    .terminal-controls { display: flex; gap: 0.38em; align-items: center; }
+    .control { width: 0.6em; height: 0.6em; border-radius: 50%; }
+    .control.close    { background: #e33; }
+    .control.minimize { background: #ee0; }
+    .control.maximize { background: #0b0; }
+
+    .terminal-body {
+      padding: 1em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 4em;
+    }
+
+    /* ── Newton's Cradle ─────────────────────────────────────────── */
+
+    .newtons-cradle {
+      --dot-size: 10px;
+      --string-length: 28px;
+      --dot-color: var(--amber);
+      display: flex;
+      gap: 3px;
+      align-items: flex-end;
+      height: calc(var(--string-length) + var(--dot-size));
+    }
+
+    .newtons-cradle__dot {
+      width: var(--dot-size);
+      height: var(--dot-size);
+      background: var(--dot-color);
+      border-radius: 50%;
+      transform-origin: top center;
+      position: relative;
+    }
+
+    .newtons-cradle__dot::before {
+      content: '';
+      position: absolute;
+      top: calc(-1 * var(--string-length));
+      left: 50%;
+      width: 1px;
+      height: var(--string-length);
+      background: var(--dot-color);
+      opacity: 0.4;
+      transform: translateX(-50%);
+    }
+
+    .newtons-cradle__dot:first-child {
+      animation: newton-left 0.9s ease-in-out infinite alternate;
+    }
+    .newtons-cradle__dot:last-child {
+      animation: newton-right 0.9s ease-in-out infinite alternate;
+    }
+
+    @keyframes newton-left {
+      0%, 40%   { transform: rotate(0deg); }
+      70%, 100% { transform: rotate(-35deg); }
+    }
+    @keyframes newton-right {
+      0%, 40%   { transform: rotate(35deg); }
+      70%, 100% { transform: rotate(0deg); }
     }
 
     /* ── Entrance animation ──────────────────────────────────────── */
@@ -61,7 +158,7 @@
       .name, .tagline, .links, .email { animation: none; }
     }
 
-    /* ── Content ─────────────────────────────────────────────── */
+    /* ── Content ─────────────────────────────────────────────────── */
 
     .center {
       text-align: center;
@@ -84,13 +181,14 @@
       margin-bottom: 2.75rem;
     }
 
-    /* ── Buttons ─────────────────────────────────────────────── */
+    /* ── Links row ───────────────────────────────────────────────── */
 
     .links {
       display: flex;
-      gap: 0.75rem;
+      gap: 1rem;
       justify-content: center;
       flex-wrap: wrap;
+      align-items: center;
     }
 
     .btn-primary-wrap {
@@ -98,55 +196,82 @@
       display: inline-flex;
     }
 
-    .btn-primary {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.45rem;
-      padding: 0.6rem 1.2rem;
-      background: rgba(200,145,60,0.08);
-      border: 1px solid rgba(200,145,60,0.28);
-      border-radius: 7px;
-      color: var(--amber);
-      font-size: 0.875rem;
-      font-weight: 600;
+    /* ── Brutalist button ────────────────────────────────────────── */
+
+    .btn-brutalist {
+      --hover_offset: 4px;
+      --button_radius: 0.55em;
+      font-size: 0.85rem;
+      font-weight: 700;
+      font-family: inherit;
       letter-spacing: 0.01em;
+      border: none;
+      border-radius: var(--button_radius);
+      background: var(--button_outline_color);
+      position: relative;
+      cursor: pointer;
       text-decoration: none;
-      transition: background 0.15s, border-color 0.15s, transform 0.12s;
+      display: inline-block;
+      transition: box-shadow 0.15s, transform 0.15s;
     }
-    .btn-primary:hover {
-      background: rgba(200,145,60,0.14);
-      border-color: rgba(200,145,60,0.5);
-      transform: translateY(-1px);
-    }
-    .btn-primary:active { transform: translateY(0); }
 
-    .btn-ghost {
-      display: inline-flex;
+    .btn-amber {
+      --button_color: #c8913c;
+      --button_outline_color: #0c0c0b;
+      --shadow_color: rgba(200,145,60,0.5);
+    }
+
+    .btn-github {
+      --button_color: #f0f6fc;
+      --button_outline_color: #24292f;
+      --shadow_color: rgba(0,0,0,0.55);
+    }
+
+    .button_top {
+      display: flex;
       align-items: center;
       gap: 0.45rem;
-      padding: 0.6rem 1.2rem;
-      background: transparent;
-      border: 1px solid var(--border);
-      border-radius: 7px;
-      color: var(--text-sub);
-      font-size: 0.875rem;
-      font-weight: 500;
-      text-decoration: none;
-      transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.12s;
+      box-sizing: border-box;
+      border: 2px solid var(--button_outline_color);
+      border-radius: var(--button_radius);
+      padding: 0.55em 1.15em;
+      background: var(--button_color);
+      color: var(--button_outline_color);
+      transform: translateY(-0.18em);
+      transition: transform 0.15s cubic-bezier(0.23, 1, 0.32, 1);
+      white-space: nowrap;
     }
-    .btn-ghost:hover {
-      background: var(--surface);
-      border-color: rgba(200,145,60,0.22);
-      color: var(--text);
-      transform: translateY(-1px);
-    }
-    .btn-ghost:active { transform: translateY(0); }
 
-    /* ── Exam preview tooltip ────────────────────────────────── */
+    .btn-brutalist:hover {
+      box-shadow: var(--hover_offset) var(--hover_offset) 0 var(--shadow_color);
+      animation: brutalistShake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    }
+    .btn-brutalist:hover .button_top { transform: translateY(-0.3em); }
+
+    .btn-brutalist:active {
+      box-shadow: 2px 2px 0 var(--shadow_color);
+      transform: translate(-2px, -2px);
+      animation: none;
+    }
+    .btn-brutalist:active .button_top { transform: translateY(0); }
+
+    .btn-brutalist:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+
+    @keyframes brutalistShake {
+      0%, 100% { transform: translate(-4px, -4px); }
+      25%       { transform: translate(-6px, -6px) rotate(-1deg); }
+      75%       { transform: translate(-2px, -2px) rotate(1deg); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .btn-brutalist:hover { animation: none; transform: none; }
+    }
+
+    /* ── Exam preview tooltip ────────────────────────────────────── */
 
     .exam-preview {
       position: absolute;
-      bottom: calc(100% + 0.7rem);
+      bottom: calc(100% + 0.8rem);
       left: 50%;
       transform: translateX(-50%) translateY(4px);
       background: var(--surface);
@@ -157,7 +282,7 @@
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.15s, transform 0.15s;
-      z-index: 10;
+      z-index: 20;
       text-align: left;
     }
     .exam-preview.visible {
@@ -191,13 +316,9 @@
       letter-spacing: -0.01em;
       margin-bottom: 0.15rem;
     }
-    .preview-name {
-      display: block;
-      font-size: 0.68rem;
-      color: var(--text-sub);
-    }
+    .preview-name { display: block; font-size: 0.68rem; color: var(--text-sub); }
 
-    /* ── Email ───────────────────────────────────────────────── */
+    /* ── Email ───────────────────────────────────────────────────── */
 
     .email {
       display: inline-block;
@@ -210,56 +331,86 @@
     }
     .email:hover { color: var(--text-sub); }
 
-    /* ── Cursor ──────────────────────────────────────────────── */
+    /* ── Cursor ──────────────────────────────────────────────────── */
 
     .cursor-dot {
-      width: 7px;
-      height: 7px;
-      background: var(--amber);
-      border-radius: 50%;
-      position: fixed;
-      pointer-events: none;
-      transform: translate(-50%, -50%);
-      z-index: 9999;
-      will-change: left, top;
+      width: 7px; height: 7px;
+      background: var(--amber); border-radius: 50%;
+      position: fixed; pointer-events: none;
+      transform: translate(-50%,-50%);
+      z-index: 9999; will-change: left, top;
     }
-
     .cursor-ring {
-      width: 30px;
-      height: 30px;
-      border: 1.5px solid rgba(200,145,60,0.35);
-      border-radius: 50%;
-      position: fixed;
-      pointer-events: none;
-      transform: translate(-50%, -50%);
-      z-index: 9998;
-      will-change: left, top;
+      width: 30px; height: 30px;
+      border: 1.5px solid rgba(200,145,60,0.35); border-radius: 50%;
+      position: fixed; pointer-events: none;
+      transform: translate(-50%,-50%);
+      z-index: 9998; will-change: left, top;
       transition: width 0.18s, height 0.18s, border-color 0.18s;
     }
-    .cursor-ring.hovered {
-      width: 44px;
-      height: 44px;
-      border-color: rgba(200,145,60,0.6);
+    .cursor-ring.hovered { width: 44px; height: 44px; border-color: rgba(200,145,60,0.6); }
+
+    /* ── Cursor trail particles ──────────────────────────────────── */
+
+    .cursor-particle {
+      width: 4px; height: 4px;
+      background: var(--amber); border-radius: 50%;
+      position: fixed; pointer-events: none;
+      transform: translate(-50%,-50%);
+      z-index: 9997; opacity: 0;
+      will-change: left, top, opacity;
+    }
+    @keyframes particleFade {
+      from { opacity: 0.55; transform: translate(-50%,-50%) scale(1); }
+      to   { opacity: 0;    transform: translate(-50%,-50%) scale(0.3); }
     }
 
     @media (hover: none) {
-      .cursor-dot, .cursor-ring { display: none; }
+      .cursor-dot, .cursor-ring, .cursor-particle { display: none; }
       html { cursor: auto; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .cursor-particle { display: none; }
     }
   </style>
 </head>
 <body>
 
+<!-- ── Loading screen ──────────────────────────────────────────── -->
+<div class="page-loader" id="pageLoader">
+  <div class="terminal-loader">
+    <div class="terminal-header">
+      <div class="terminal-title">yaeesh.dev</div>
+      <div class="terminal-controls">
+        <div class="control close"></div>
+        <div class="control minimize"></div>
+        <div class="control maximize"></div>
+      </div>
+    </div>
+    <div class="terminal-body">
+      <div class="newtons-cradle">
+        <div class="newtons-cradle__dot"></div>
+        <div class="newtons-cradle__dot"></div>
+        <div class="newtons-cradle__dot"></div>
+        <div class="newtons-cradle__dot"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Main content ────────────────────────────────────────────── -->
 <div class="center">
   <h1 class="name">Yaeesh</h1>
   <p class="tagline">I'll put some stuff here eventually</p>
   <div class="links">
     <div class="btn-primary-wrap">
-      <a href="/exam-countdown" class="btn-primary">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-        </svg>
-        Exam Countdown
+      <a href="/exam-countdown" class="btn-brutalist btn-amber" data-content="Exam Countdown">
+        <span class="button_top">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+          Exam Countdown
+        </span>
       </a>
       <div class="exam-preview" id="examPreview" aria-hidden="true">
         <span class="preview-label">Next up</span>
@@ -267,11 +418,13 @@
         <span class="preview-name" id="previewName"></span>
       </div>
     </div>
-    <a href="https://github.com/mYaeesh" class="btn-ghost" target="_blank" rel="noopener noreferrer">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.604-3.369-1.342-3.369-1.342-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.741 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
-      </svg>
-      GitHub
+    <a href="https://github.com/mYaeesh" class="btn-brutalist btn-github" target="_blank" rel="noopener noreferrer" data-content="GitHub">
+      <span class="button_top">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.604-3.369-1.342-3.369-1.342-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.741 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
+        </svg>
+        GitHub
+      </span>
     </a>
   </div>
   <a href="mailto:me@yaeesh.dev" class="email">me@yaeesh.dev</a>
@@ -283,6 +436,15 @@
 <script>
 (function () {
   'use strict';
+
+  /* ── Loading screen dismiss ──────────────────────────────────── */
+
+  setTimeout(function () {
+    var l = document.getElementById('pageLoader');
+    if (!l) return;
+    l.style.opacity = '0';
+    setTimeout(function () { if (l.parentNode) l.parentNode.removeChild(l); }, 500);
+  }, 1800);
 
   /* ── Cursor ──────────────────────────────────────────────────── */
 
@@ -311,12 +473,40 @@
     el.addEventListener('mouseleave', function () { ring.classList.remove('hovered'); });
   });
 
+  /* ── Cursor trail particles ──────────────────────────────────── */
+
+  (function () {
+    if (window.matchMedia('(hover: none)').matches) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    var POOL = 14;
+    var pool = [];
+    var idx  = 0;
+
+    for (var i = 0; i < POOL; i++) {
+      var p = document.createElement('div');
+      p.className = 'cursor-particle';
+      document.body.appendChild(p);
+      pool.push(p);
+    }
+
+    document.addEventListener('mousemove', function (e) {
+      var p = pool[idx % POOL];
+      idx++;
+      p.style.left = e.clientX + 'px';
+      p.style.top  = e.clientY + 'px';
+      p.style.animation = 'none';
+      p.offsetHeight; // force reflow to restart animation
+      p.style.animation = 'particleFade 350ms ease-out forwards';
+    });
+  }());
+
   /* ── Exam preview tooltip ────────────────────────────────────── */
 
   (function () {
     var EXAMS_HP = [
-      { name: 'Term Test',           utcMs: Date.UTC(2026, 5, 30, 2, 10, 0) },
-      { name: 'Mock Exams',          utcMs: Date.UTC(2026, 8,  1, 4, 30, 0) },
+      { name: 'Term Test',      utcMs: Date.UTC(2026, 5, 30, 2, 10, 0) },
+      { name: 'Mock Exams',     utcMs: Date.UTC(2026, 8,  1, 4, 30, 0) },
       { name: 'O‑Level & SSE', utcMs: Date.UTC(2026, 8, 20, 4, 30, 0) },
     ];
 
