@@ -116,8 +116,8 @@
     /* Ball N rests 0–25%, swings out 25–50%, swings back 50–75%, rests 75–100% */
     @keyframes nc-right {
       0%   { transform: rotate(0deg);   animation-timing-function: linear; }
-      25%  { transform: rotate(0deg);   animation-timing-function: cubic-bezier(0.47, 0, 0.745, 0.715); }
-      50%  { transform: rotate(-42deg); animation-timing-function: cubic-bezier(0.39, 0.575, 0.565, 1); }
+      25%  { transform: rotate(0deg);   animation-timing-function: cubic-bezier(0.39, 0.575, 0.565, 1); }
+      50%  { transform: rotate(-42deg); animation-timing-function: cubic-bezier(0.47, 0, 0.745, 0.715); }
       75%  { transform: rotate(0deg);   animation-timing-function: linear; }
       100% { transform: rotate(0deg);   }
     }
@@ -411,7 +411,7 @@
     if (!l) return;
     l.style.opacity = '0';
     setTimeout(function () { if (l.parentNode) l.parentNode.removeChild(l); }, 500);
-  }, 1000);
+  }, 2200);
 
   /* ── Exam countdown preview tooltip ─────────────────────────────── */
   (function () {
