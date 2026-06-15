@@ -1,69 +1,120 @@
-# yaeesh.dev — Project Guide
+# yaeesh.dev website — Workspace Guide
 
-## Overview
-Personal website for Yaeesh. Pure HTML/CSS/JS, **no build tools, no frameworks, no external dependencies**. Every page is a single self-contained `.html` file.
+## What this folder is
+This is the primary working directory for Yaeesh's personal website cluster. It is **not** a git repo itself — it's a workspace containing multiple sub-projects with their own repos.
 
-## Repo layout
 ```
-/
-├── index.html            # Homepage
-├── exam-countdown/
-│   └── index.html        # Exam Countdown page
-├── CNAME                 # yaeesh.dev → GitHub Pages
-└── CLAUDE.md
+yaeesh.dev website/
+├── index.html            ← Homepage draft (local working copy — see note below)
+├── public/
+│   └── click-speed/      ← Click Speed game (placeholder, to be built)
+├── scoutblog/            ← Jekyll blog (separate git repo)
+├── .mcp.json             ← MCP servers: shadcn + 21st-dev-magic
+└── .claude/
+    └── settings.local.json
 ```
 
-## Working with the repo
-This repo has no local copy on the user's desktop. Always clone it fresh in the job tmp directory:
+---
+
+## Repos and deployments
+
+| Project | Local path | Git remote | Live URL |
+|---------|-----------|------------|----------|
+| Main website | `index.html` here + clone to tmp | `github.com/mYaeesh/yaeesh.dev` | `https://yaeesh.dev` |
+| Scout Blog | `scoutblog/` | `github.com/mYaeesh/scoutblog` | `https://scoutblog.yaeesh.dev` |
+
+### Working on yaeesh.dev (main site)
+The main site has no local git here. Claude Code clones it to a job tmp dir:
 ```
-git clone https://github.com/mYaeesh/yaeesh.dev <path>
+git clone https://github.com/mYaeesh/yaeesh.dev <tmp-path>
 ```
 Edit files there, then `git add`, `git commit`, `git push origin main`. GitHub Pages deploys automatically from `main`.
 
-## Design system
-All CSS uses these custom properties (defined in `:root` in every page):
+The `index.html` at the root of this folder is a **local draft** — it may be ahead of or different from the committed version. When working on the site, check both the local draft and the git state.
+
+### Working on scoutblog
+`scoutblog/` is a self-contained Jekyll repo. To run locally:
 ```
---bg:         #0c0c0b   (page background)
---surface:    #141311   (cards, terminal)
+cd scoutblog
+bundle exec jekyll serve
+```
+Push from inside `scoutblog/` to `github.com/mYaeesh/scoutblog`.
+
+---
+
+## Main website (yaeesh.dev) — Design system
+
+### Pages
+- `/` → `index.html` — Homepage (name, tagline, buttons, email)
+- `/exam-countdown` → `exam-countdown/index.html` — Live countdown timer
+- `/click-speed` → `public/click-speed/` — Click speed game (in progress)
+
+### CSS custom properties (all pages share these)
+```css
+--bg:         #0c0c0b   /* page background */
+--surface:    #141311   /* cards, overlays */
 --border:     #252220
+--border-hi:  #3d3935
 --text:       #ede9e3
 --text-sub:   #8a7e74
 --text-muted: #4e4440
---amber:      #c8913c   (accent / CTA colour)
+--amber:      #c8913c   /* accent / CTA */
+--amber-hi:   #daa84e
+--amber-lo:   #a3722a
 ```
-Body grain texture: SVG `feTurbulence` fractalNoise at `opacity='0.05'` as `background-image`.
 
-## Components in use
+### Grain texture
+SVG `feTurbulence` fractalNoise at `opacity='0.05'` as body `background-image`. Behind all content.
+
+### Buttons (homepage)
+Three variants, all via `.btn` base class + modifier:
+- `.btn-amber` — gold gradient, dark text. Primary CTA (Exam Countdown)
+- `.btn-dark` — slate gradient, light text. Secondary (GitHub)
+- `.btn-outline` — transparent, bordered. Ghost (Click Speed)
+
+Hover: `translateY(-2px)` + elevated box-shadow. Active: `translateY(1px)`.
 
 ### Page loader (both pages)
-Terminal window overlay (`z-index: 9000`) with Newton's Cradle animation. Fades out after 1800 ms + 500 ms. Hidden via `display: none` when `prefers-reduced-motion` is set.
-
-### Brutalist buttons (homepage only)
-`.btn-brutalist` with `.btn-amber` (Exam Countdown) or `.btn-github` (GitHub). Inner `.button_top` lifts on hover; `@keyframes brutalistShake` bakes the `-4px,-4px` offset into keyframes so it coexists with the `animation` property.
+Newton's Cradle animation overlay (`z-index: 9000`). On homepage: bare cradle + "yaeesh.dev" label (no terminal window). On exam-countdown: same cradle inside a terminal window chrome. Dismisses after 1800 ms + 500 ms fade. Hidden when `prefers-reduced-motion` is set.
 
 ### Custom cursor (homepage only)
-`.cursor-dot` (4 px amber dot) + `.cursor-ring` (20 px ring) tracked via `mousemove`. JS adds `.hovered` class on anchor hover. Hidden on touch devices via `@media (hover: none)`.
+`.cursor-dot` (7 px amber dot) + `.cursor-ring` (30 px ring, lazy-follows via rAF at 12% lerp). Ring expands on hover over `a`/`button` via JS `.hovered` class. Hidden on touch devices (`@media (hover: none)`).
 
 ### Cursor trail particles (homepage only)
-Pool of 14 `.cursor-particle` divs recycled by index. Animation restarted each mousemove with the `el.offsetHeight` reflow trick. `z-index: 9997`.
+Pool of 14 `.cursor-particle` divs (4 px amber circles), recycled cyclically. Animation restarted per mousemove using the `el.offsetHeight` reflow trick. `z-index: 9997`.
 
-### Exam countdown logic
-- Data in `EXAMS` array: `{ id, name, startMs, utcMs, display }`.
-- All times stored as UTC milliseconds (MVT = UTC+5, so `MVT_hour - 5`).
-- `getActive()` filters exams where `utcMs > Date.now()`.
-- Fast-path tick: updates only the 4 digit `<span>` elements without re-rendering.
-- `selectedId` persisted in `localStorage` under key `exam-countdown-selected`.
-- Default exam: `o-level`.
+### Exam preview tooltip (homepage)
+`.exam-preview` above the Exam Countdown button. Shows next exam name + live countdown. Appears on `.btn-wrap` mouseenter, updates every 1 s, hides on mouseleave.
 
-### Header clock (exam-countdown only)
-`<span id="headerClock">` in `.header-right`, updated every second with 24-h `HH:MM` local time.
+---
 
-### Ambient glow (exam-countdown only)
-`<div class="digit-glow">` as first child of `.hero`. Radial gradient, `@keyframes glowPulse` 4 s alternate. `.main-wrap` sits above it via `position: relative; z-index: 1`.
+## Exam Countdown page — key details
 
-## Keyboard shortcuts (exam-countdown)
-- `F` — toggle fullscreen
-- `←` / `→` — cycle between active exams
+### Data format
+```js
+{ id, name, startMs, utcMs, display }
+```
+- All times stored as UTC milliseconds. MVT = UTC+5, so `utcMs = MVT_hour - 5`.
+- Default selected exam: `o-level`. Saved in `localStorage` under `exam-countdown-selected`.
+
+### Current exam dates (MVT)
+| Exam | Date | `utcMs` |
+|------|------|---------|
+| Term Test | 30 Jun 2026 · 7:10 AM | `Date.UTC(2026, 5, 30, 2, 10, 0)` |
+| Mock Exams | 1 Sep 2026 · 9:30 AM | `Date.UTC(2026, 8, 1, 4, 30, 0)` |
+| O-Level & SSE | 20 Sep 2026 · 9:30 AM | `Date.UTC(2026, 8, 20, 4, 30, 0)` |
+
+### Features
+- Fast-path tick: only updates the 4 digit `<span>` elements without re-rendering
+- `←` / `→` keys to cycle active exams
+- `F` key to toggle fullscreen
+- Live header clock (HH:MM, 24 h local time)
+- Ambient radial glow behind digits (`glowPulse` 4 s alternate)
+- Progress bars per exam card (based on `startMs → utcMs`)
+- Toast on exam expiry mid-session (`aria-live="polite"`)
+- Share button copies `https://yaeesh.dev/exam-countdown` to clipboard
+
+---
 
 ## z-index scale
 ```
@@ -76,16 +127,23 @@ glow             0
 ```
 
 ## Accessibility
-- `prefers-reduced-motion`: loader hidden, shake disabled, particles hidden, glow static.
-- `@media (hover: none)`: cursor elements hidden, `html { cursor: auto }`.
-- Countdown has `role="timer"` and `aria-label`.
-- Toast has `aria-live="polite"`.
+- `prefers-reduced-motion`: loader hidden, shake disabled, particles hidden, glow static
+- `@media (hover: none)`: cursor elements hidden, `html { cursor: auto }`
+- Countdown has `role="timer"` and `aria-label`
+- Toast uses `aria-live="polite"`
+- Buttons have `focus-visible` outlines (2 px amber)
 
-## Exam dates (as of June 2026)
-| Exam | Date (MVT) | `utcMs` |
-|------|-----------|---------|
-| Term Test | 30 Jun 2026 · 7:10 AM | `Date.UTC(2026, 5, 30, 2, 10, 0)` |
-| Mock Exams | 1 Sep 2026 · 9:30 AM | `Date.UTC(2026, 8, 1, 4, 30, 0)` |
-| O-Level & SSE | 20 Sep 2026 · 9:30 AM | `Date.UTC(2026, 8, 20, 4, 30, 0)` |
+---
 
-MVT is UTC+5. To convert: `utcMs = MVT_hour - 5`.
+## MCP servers (`.mcp.json`)
+- **shadcn** — `npx shadcn@latest mcp` — shadcn/ui component search and examples
+- **21st-dev-magic** — `@21st-dev/magic@latest` — UI component builder/refiner
+
+---
+
+## Scout Blog (`scoutblog/`)
+- Jekyll site with `knhash/jekyllBear` remote theme
+- Plugins: `jekyll-feed`, `jekyll-remote-theme`, `jekyll-redirect-from`
+- Posts in `_posts/`, built output in `_site/` (gitignored)
+- Author: Yaeesh · Email: yaeesh.main@gmail.com
+- CNAME: `scoutblog.yaeesh.dev`

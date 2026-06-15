@@ -19,10 +19,13 @@
       --bg:         #0c0c0b;
       --surface:    #141311;
       --border:     #252220;
+      --border-hi:  #3d3935;
       --text:       #ede9e3;
       --text-sub:   #8a7e74;
       --text-muted: #4e4440;
       --amber:      #c8913c;
+      --amber-hi:   #daa84e;
+      --amber-lo:   #a3722a;
     }
 
     html { height: 100%; cursor: none; }
@@ -40,7 +43,7 @@
       justify-content: center;
     }
 
-    /* ── Page loader overlay ─────────────────────────────────────── */
+    /* ── Page loader ────────────────────────────────────────────────── */
 
     .page-loader {
       position: fixed;
@@ -48,117 +51,97 @@
       z-index: 9000;
       background: var(--bg);
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
+      gap: 2rem;
       transition: opacity 0.5s ease;
     }
     @media (prefers-reduced-motion: reduce) { .page-loader { display: none; } }
 
-    /* ── Terminal window ─────────────────────────────────────────── */
+    /* ── Newton's Cradle ────────────────────────────────────────────── */
 
-    .terminal-loader {
-      border: 0.1em solid var(--border);
-      background-color: var(--surface);
-      color: var(--amber);
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 1em;
-      width: 13em;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.6);
-      border-radius: 5px;
-      overflow: hidden;
-    }
-
-    .terminal-header {
-      height: 1.6em;
-      background-color: #1e1c1a;
-      padding: 0 0.5em;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .terminal-title {
-      font-size: 0.72em;
-      color: var(--text-muted);
-      letter-spacing: 0.04em;
-    }
-    .terminal-controls { display: flex; gap: 0.38em; align-items: center; }
-    .control { width: 0.6em; height: 0.6em; border-radius: 50%; }
-    .control.close    { background: #e33; }
-    .control.minimize { background: #ee0; }
-    .control.maximize { background: #0b0; }
-
-    .terminal-body {
-      padding: 1em;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 4em;
-    }
-
-    /* ── Newton's Cradle ─────────────────────────────────────────── */
-
-    .newtons-cradle {
-      --dot-size: 10px;
-      --string-length: 28px;
-      --dot-color: var(--amber);
+    .nc {
+      --ball:   18px;
+      --string: 56px;
       display: flex;
       gap: 3px;
       align-items: flex-end;
-      height: calc(var(--string-length) + var(--dot-size));
     }
 
-    .newtons-cradle__dot {
-      width: var(--dot-size);
-      height: var(--dot-size);
-      background: var(--dot-color);
+    .nc-ball {
+      width: var(--ball);
+      height: var(--ball);
       border-radius: 50%;
-      transform-origin: top center;
+      background: radial-gradient(circle at 35% 30%, var(--amber-hi) 0%, var(--amber) 55%, var(--amber-lo) 100%);
+      box-shadow:
+        0 0 0 1px rgba(200,145,60,0.25),
+        0 0 16px rgba(200,145,60,0.35);
       position: relative;
+      transform-origin: 50% calc(-1 * var(--string));
     }
 
-    .newtons-cradle__dot::before {
+    /* String */
+    .nc-ball::before {
       content: '';
       position: absolute;
-      top: calc(-1 * var(--string-length));
+      bottom: 100%;
       left: 50%;
-      width: 1px;
-      height: var(--string-length);
-      background: var(--dot-color);
-      opacity: 0.4;
       transform: translateX(-50%);
+      width: 1px;
+      height: var(--string);
+      background: linear-gradient(to top, var(--amber), transparent);
+      opacity: 0.55;
     }
 
-    .newtons-cradle__dot:first-child {
-      animation: newton-left 0.9s ease-in-out infinite alternate;
+    /* Only the outermost balls swing — correct Newton's cradle physics */
+    .nc-ball:first-child {
+      animation: nc-left 2s linear infinite;
     }
-    .newtons-cradle__dot:last-child {
-      animation: newton-right 0.9s ease-in-out infinite alternate;
-    }
-
-    @keyframes newton-left {
-      0%, 40%   { transform: rotate(0deg); }
-      70%, 100% { transform: rotate(-35deg); }
-    }
-    @keyframes newton-right {
-      0%, 40%   { transform: rotate(35deg); }
-      70%, 100% { transform: rotate(0deg); }
+    .nc-ball:last-child {
+      animation: nc-right 2s linear infinite;
     }
 
-    /* ── Entrance animation ──────────────────────────────────────── */
+    /* Ball 1 swings 0–25% and 75–100%, rests 25–75% */
+    @keyframes nc-left {
+      0%   { transform: rotate(-42deg); animation-timing-function: ease-in;  }
+      25%  { transform: rotate(0deg);   animation-timing-function: linear;    }
+      75%  { transform: rotate(0deg);   animation-timing-function: ease-out;  }
+      100% { transform: rotate(-42deg); }
+    }
+
+    /* Ball N rests 0–25%, swings out 25–50%, swings back 50–75%, rests 75–100% */
+    @keyframes nc-right {
+      0%   { transform: rotate(0deg);   animation-timing-function: linear;    }
+      25%  { transform: rotate(0deg);   animation-timing-function: ease-out;  }
+      50%  { transform: rotate(42deg);  animation-timing-function: ease-in;   }
+      75%  { transform: rotate(0deg);   animation-timing-function: linear;    }
+      100% { transform: rotate(0deg);   }
+    }
+
+    .loader-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* ── Entrance animations ────────────────────────────────────────── */
 
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(8px); }
-      to   { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0);    }
     }
-    .name    { animation: fadeUp 0.4s ease both; }
-    .tagline { animation: fadeUp 0.4s ease both; animation-delay: 80ms; }
-    .links   { animation: fadeUp 0.4s ease both; animation-delay: 160ms; }
-    .email   { animation: fadeUp 0.4s ease both; animation-delay: 220ms; }
+    .name    { animation: fadeUp 0.45s ease both; }
+    .tagline { animation: fadeUp 0.45s ease 80ms  both; }
+    .links   { animation: fadeUp 0.45s ease 160ms both; }
+    .email   { animation: fadeUp 0.45s ease 240ms both; }
     @media (prefers-reduced-motion: reduce) {
       .name, .tagline, .links, .email { animation: none; }
     }
 
-    /* ── Content ─────────────────────────────────────────────────── */
+    /* ── Content ────────────────────────────────────────────────────── */
 
     .center {
       text-align: center;
@@ -181,103 +164,119 @@
       margin-bottom: 2.75rem;
     }
 
-    /* ── Links row ───────────────────────────────────────────────── */
+    /* ── Links row ──────────────────────────────────────────────────── */
 
     .links {
       display: flex;
-      gap: 1rem;
+      gap: 0.65rem;
       justify-content: center;
       flex-wrap: wrap;
       align-items: center;
     }
 
-    .btn-primary-wrap {
+    .btn-wrap {
       position: relative;
       display: inline-flex;
     }
 
-    /* ── Brutalist button ────────────────────────────────────────── */
+    /* ── Buttons (gradient-texture style, plain CSS) ─────────────────── */
 
-    .btn-brutalist {
-      --hover_offset: 4px;
-      --button_radius: 0.55em;
-      font-size: 0.85rem;
-      font-weight: 700;
-      font-family: inherit;
-      letter-spacing: 0.01em;
-      border: none;
-      border-radius: var(--button_radius);
-      background: var(--button_outline_color);
-      position: relative;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-block;
-      transition: box-shadow 0.15s, transform 0.15s;
-    }
-
-    .btn-amber {
-      --button_color: #c8913c;
-      --button_outline_color: #0c0c0b;
-      --shadow_color: rgba(200,145,60,0.5);
-    }
-
-    .btn-github {
-      --button_color: #f0f6fc;
-      --button_outline_color: #24292f;
-      --shadow_color: rgba(0,0,0,0.55);
-    }
-
-    .button_top {
-      display: flex;
+    .btn {
+      display: inline-flex;
       align-items: center;
       gap: 0.45rem;
-      box-sizing: border-box;
-      border: 2px solid var(--button_outline_color);
-      border-radius: var(--button_radius);
-      padding: 0.55em 1.15em;
-      background: var(--button_color);
-      color: var(--button_outline_color);
-      transform: translateY(-0.18em);
-      transition: transform 0.15s cubic-bezier(0.23, 1, 0.32, 1);
+      padding: 0.6em 1.2em;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      text-decoration: none;
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      cursor: pointer;
       white-space: nowrap;
+      position: relative;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    .btn-brutalist:hover {
-      box-shadow: var(--hover_offset) var(--hover_offset) 0 var(--shadow_color);
-      animation: brutalistShake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
-    }
-    .btn-brutalist:hover .button_top { transform: translateY(-0.3em); }
-
-    .btn-brutalist:active {
-      box-shadow: 2px 2px 0 var(--shadow_color);
-      transform: translate(-2px, -2px);
-      animation: none;
-    }
-    .btn-brutalist:active .button_top { transform: translateY(0); }
-
-    .btn-brutalist:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
-
-    @keyframes brutalistShake {
-      0%, 100% { transform: translate(-4px, -4px); }
-      25%       { transform: translate(-6px, -6px) rotate(-1deg); }
-      75%       { transform: translate(-2px, -2px) rotate(1deg); }
+    .btn:focus-visible {
+      outline: 2px solid var(--amber);
+      outline-offset: 3px;
     }
 
-    @media (prefers-reduced-motion: reduce) {
-      .btn-brutalist:hover { animation: none; transform: none; }
+    .btn:active { transform: translateY(1px) !important; }
+
+    /* Amber / primary — warm gold gradient with inner highlight */
+    .btn-amber {
+      background: linear-gradient(180deg, #d9a04a 0%, #a86e22 100%);
+      border-color: #8a5818;
+      color: #1c0d00;
+      font-weight: 700;
+      box-shadow:
+        inset 0 1px 0 rgba(255,228,160,0.3),
+        inset 0 -1px 0 rgba(0,0,0,0.3),
+        0 2px 6px rgba(200,145,60,0.3),
+        0 1px 2px rgba(0,0,0,0.4);
+    }
+    .btn-amber:hover {
+      background: linear-gradient(180deg, #e0ab52 0%, #b57827 100%);
+      transform: translateY(-2px);
+      box-shadow:
+        inset 0 1px 0 rgba(255,228,160,0.35),
+        inset 0 -1px 0 rgba(0,0,0,0.3),
+        0 8px 22px rgba(200,145,60,0.42),
+        0 2px 4px rgba(0,0,0,0.4);
     }
 
-    /* ── Exam preview tooltip ────────────────────────────────────── */
+    /* Dark / secondary — slate gradient with subtle highlight */
+    .btn-dark {
+      background: linear-gradient(180deg, #2c2a27 0%, #191714 100%);
+      border-color: var(--border-hi);
+      color: var(--text);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.07),
+        inset 0 -1px 0 rgba(0,0,0,0.4),
+        0 2px 6px rgba(0,0,0,0.45),
+        0 1px 2px rgba(0,0,0,0.55);
+    }
+    .btn-dark:hover {
+      background: linear-gradient(180deg, #34322e 0%, #222019 100%);
+      border-color: #5c5753;
+      transform: translateY(-2px);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.09),
+        inset 0 -1px 0 rgba(0,0,0,0.4),
+        0 8px 22px rgba(0,0,0,0.55),
+        0 2px 4px rgba(0,0,0,0.6);
+    }
+
+    /* Ghost / outline — third action button */
+    .btn-outline {
+      background: transparent;
+      border-color: var(--border);
+      color: var(--text-sub);
+      box-shadow: none;
+    }
+    .btn-outline:hover {
+      border-color: var(--border-hi);
+      color: var(--text);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+    }
+
+    /* ── Exam preview tooltip ───────────────────────────────────────── */
 
     .exam-preview {
       position: absolute;
-      bottom: calc(100% + 0.8rem);
+      bottom: calc(100% + 0.75rem);
       left: 50%;
       transform: translateX(-50%) translateY(4px);
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 0.6rem 0.85rem;
+      border-radius: 9px;
+      padding: 0.6rem 0.9rem;
       white-space: nowrap;
       opacity: 0;
       pointer-events: none;
@@ -301,14 +300,15 @@
     .preview-label {
       display: block;
       font-size: 0.58rem;
-      letter-spacing: 0.14em;
+      font-weight: 700;
+      letter-spacing: 0.16em;
       text-transform: uppercase;
       color: var(--text-muted);
-      margin-bottom: 0.3rem;
+      margin-bottom: 0.28rem;
     }
     .preview-time {
       display: block;
-      font-size: 0.88rem;
+      font-size: 0.86rem;
       font-weight: 600;
       font-family: 'SF Mono', ui-monospace, Consolas, monospace;
       color: var(--amber);
@@ -316,9 +316,13 @@
       letter-spacing: -0.01em;
       margin-bottom: 0.15rem;
     }
-    .preview-name { display: block; font-size: 0.68rem; color: var(--text-sub); }
+    .preview-name {
+      display: block;
+      font-size: 0.68rem;
+      color: var(--text-sub);
+    }
 
-    /* ── Email ───────────────────────────────────────────────────── */
+    /* ── Email ──────────────────────────────────────────────────────── */
 
     .email {
       display: inline-block;
@@ -326,43 +330,46 @@
       font-size: 0.78rem;
       color: var(--text-muted);
       text-decoration: none;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.05em;
       transition: color 0.15s;
     }
     .email:hover { color: var(--text-sub); }
 
-    /* ── Cursor ──────────────────────────────────────────────────── */
+    /* ── Custom cursor ──────────────────────────────────────────────── */
 
     .cursor-dot {
       width: 7px; height: 7px;
-      background: var(--amber); border-radius: 50%;
+      background: var(--amber);
+      border-radius: 50%;
       position: fixed; pointer-events: none;
-      transform: translate(-50%,-50%);
+      transform: translate(-50%, -50%);
       z-index: 9999; will-change: left, top;
     }
     .cursor-ring {
       width: 30px; height: 30px;
-      border: 1.5px solid rgba(200,145,60,0.35); border-radius: 50%;
+      border: 1.5px solid rgba(200,145,60,0.35);
+      border-radius: 50%;
       position: fixed; pointer-events: none;
-      transform: translate(-50%,-50%);
+      transform: translate(-50%, -50%);
       z-index: 9998; will-change: left, top;
       transition: width 0.18s, height 0.18s, border-color 0.18s;
     }
     .cursor-ring.hovered { width: 44px; height: 44px; border-color: rgba(200,145,60,0.6); }
 
-    /* ── Cursor trail particles ──────────────────────────────────── */
+    /* ── Cursor trail ───────────────────────────────────────────────── */
 
     .cursor-particle {
       width: 4px; height: 4px;
-      background: var(--amber); border-radius: 50%;
+      background: var(--amber);
+      border-radius: 50%;
       position: fixed; pointer-events: none;
-      transform: translate(-50%,-50%);
+      transform: translate(-50%, -50%);
       z-index: 9997; opacity: 0;
       will-change: left, top, opacity;
     }
     @keyframes particleFade {
-      from { opacity: 0.55; transform: translate(-50%,-50%) scale(1); }
-      to   { opacity: 0;    transform: translate(-50%,-50%) scale(0.3); }
+      from { opacity: 0.5;  transform: translate(-50%, -50%) scale(1);   }
+      to   { opacity: 0;    transform: translate(-50%, -50%) scale(0.3); }
     }
 
     @media (hover: none) {
@@ -376,41 +383,32 @@
 </head>
 <body>
 
-<!-- ── Loading screen ──────────────────────────────────────────── -->
+<!-- ── Loading screen: only the Newton's Cradle ──────────────────── -->
 <div class="page-loader" id="pageLoader">
-  <div class="terminal-loader">
-    <div class="terminal-header">
-      <div class="terminal-title">yaeesh.dev</div>
-      <div class="terminal-controls">
-        <div class="control close"></div>
-        <div class="control minimize"></div>
-        <div class="control maximize"></div>
-      </div>
-    </div>
-    <div class="terminal-body">
-      <div class="newtons-cradle">
-        <div class="newtons-cradle__dot"></div>
-        <div class="newtons-cradle__dot"></div>
-        <div class="newtons-cradle__dot"></div>
-        <div class="newtons-cradle__dot"></div>
-      </div>
-    </div>
+  <div class="nc">
+    <div class="nc-ball"></div>
+    <div class="nc-ball"></div>
+    <div class="nc-ball"></div>
+    <div class="nc-ball"></div>
   </div>
+  <span class="loader-label">yaeesh.dev</span>
 </div>
 
-<!-- ── Main content ────────────────────────────────────────────── -->
+<!-- ── Main content ──────────────────────────────────────────────── -->
 <div class="center">
   <h1 class="name">Yaeesh</h1>
   <p class="tagline">I'll put some stuff here eventually</p>
+
   <div class="links">
-    <div class="btn-primary-wrap">
-      <a href="/exam-countdown" class="btn-brutalist btn-amber" data-content="Exam Countdown">
-        <span class="button_top">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-          </svg>
-          Exam Countdown
-        </span>
+
+    <!-- Exam Countdown (primary amber) -->
+    <div class="btn-wrap" id="examWrap">
+      <a href="/exam-countdown" class="btn btn-amber">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+        Exam Countdown
       </a>
       <div class="exam-preview" id="examPreview" aria-hidden="true">
         <span class="preview-label">Next up</span>
@@ -418,15 +416,35 @@
         <span class="preview-name" id="previewName"></span>
       </div>
     </div>
-    <a href="https://github.com/mYaeesh" class="btn-brutalist btn-github" target="_blank" rel="noopener noreferrer" data-content="GitHub">
-      <span class="button_top">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.604-3.369-1.342-3.369-1.342-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.741 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
-        </svg>
-        GitHub
-      </span>
+
+    <!-- GitHub (dark secondary) -->
+    <a href="https://github.com/mYaeesh" class="btn btn-dark"
+       target="_blank" rel="noopener noreferrer">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482
+          0-.237-.009-.868-.013-1.703-2.782.604-3.369-1.342-3.369-1.342-.454-1.154-1.11-1.462-1.11-1.462
+          -.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832
+          .092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683
+          -.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836
+          a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647
+          .64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852
+          0 1.336-.012 2.415-.012 2.741 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12
+          c0-5.523-4.477-10-10-10z"/>
+      </svg>
+      GitHub
     </a>
+
+    <!-- Click Speed Test (ghost outline) -->
+    <a href="/click-speed" class="btn btn-outline">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M5.5 3.5L9 14l2.5-3 3.5 4.5 2-1.5L13.5 10l3.5-1z"/>
+      </svg>
+      Click Speed
+    </a>
+
   </div>
+
   <a href="mailto:me@yaeesh.dev" class="email">me@yaeesh.dev</a>
 </div>
 
@@ -437,8 +455,7 @@
 (function () {
   'use strict';
 
-  /* ── Loading screen dismiss ──────────────────────────────────── */
-
+  /* ── Loader dismiss ──────────────────────────────────────────────── */
   setTimeout(function () {
     var l = document.getElementById('pageLoader');
     if (!l) return;
@@ -446,16 +463,14 @@
     setTimeout(function () { if (l.parentNode) l.parentNode.removeChild(l); }, 500);
   }, 1800);
 
-  /* ── Cursor ──────────────────────────────────────────────────── */
-
+  /* ── Custom cursor ───────────────────────────────────────────────── */
   var dot  = document.getElementById('cursorDot');
   var ring = document.getElementById('cursorRing');
   var mx = -200, my = -200;
   var rx = -200, ry = -200;
 
   document.addEventListener('mousemove', function (e) {
-    mx = e.clientX;
-    my = e.clientY;
+    mx = e.clientX; my = e.clientY;
     dot.style.left = mx + 'px';
     dot.style.top  = my + 'px';
   });
@@ -468,65 +483,57 @@
     requestAnimationFrame(loop);
   }());
 
-  document.querySelectorAll('a').forEach(function (el) {
+  document.querySelectorAll('a, button').forEach(function (el) {
     el.addEventListener('mouseenter', function () { ring.classList.add('hovered'); });
     el.addEventListener('mouseleave', function () { ring.classList.remove('hovered'); });
   });
 
-  /* ── Cursor trail particles ──────────────────────────────────── */
-
+  /* ── Cursor trail particles ──────────────────────────────────────── */
   (function () {
     if (window.matchMedia('(hover: none)').matches) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-    var POOL = 14;
-    var pool = [];
-    var idx  = 0;
-
+    var POOL = 14, pool = [], idx = 0;
     for (var i = 0; i < POOL; i++) {
       var p = document.createElement('div');
       p.className = 'cursor-particle';
       document.body.appendChild(p);
       pool.push(p);
     }
-
     document.addEventListener('mousemove', function (e) {
-      var p = pool[idx % POOL];
-      idx++;
+      var p = pool[idx++ % POOL];
       p.style.left = e.clientX + 'px';
       p.style.top  = e.clientY + 'px';
       p.style.animation = 'none';
-      p.offsetHeight; // force reflow to restart animation
+      p.offsetHeight;
       p.style.animation = 'particleFade 350ms ease-out forwards';
     });
   }());
 
-  /* ── Exam preview tooltip ────────────────────────────────────── */
-
+  /* ── Exam countdown preview tooltip ─────────────────────────────── */
   (function () {
-    var EXAMS_HP = [
-      { name: 'Term Test',      utcMs: Date.UTC(2026, 5, 30, 2, 10, 0) },
-      { name: 'Mock Exams',     utcMs: Date.UTC(2026, 8,  1, 4, 30, 0) },
-      { name: 'O‑Level & SSE', utcMs: Date.UTC(2026, 8, 20, 4, 30, 0) },
+    var EXAMS = [
+      { name: 'Term Test',     utcMs: Date.UTC(2026, 5, 30,  2, 10, 0) },
+      { name: 'Mock Exams',    utcMs: Date.UTC(2026, 8,  1,  4, 30, 0) },
+      { name: 'O‑Level & SSE', utcMs: Date.UTC(2026, 8, 20,  4, 30, 0) },
     ];
 
     var previewEl   = document.getElementById('examPreview');
     var previewTime = document.getElementById('previewTime');
     var previewName = document.getElementById('previewName');
-    var wrap        = document.querySelector('.btn-primary-wrap');
+    var wrap        = document.getElementById('examWrap');
     var pInterval   = null;
 
     if (!previewEl || !wrap) return;
 
     function nextExam() {
       var now = Date.now();
-      for (var i = 0; i < EXAMS_HP.length; i++) {
-        if (EXAMS_HP[i].utcMs > now) return EXAMS_HP[i];
+      for (var i = 0; i < EXAMS.length; i++) {
+        if (EXAMS[i].utcMs > now) return EXAMS[i];
       }
       return null;
     }
 
-    function pad2(n) { return n < 10 ? '0' + n : '' + n; }
+    function p2(n) { return n < 10 ? '0' + n : '' + n; }
 
     function updatePreview() {
       var exam = nextExam();
@@ -534,12 +541,12 @@
       var diff = exam.utcMs - Date.now();
       var d = Math.floor(diff / 86400000);
       var h = Math.floor((diff % 86400000) / 3600000);
-      var m = Math.floor((diff % 3600000) / 60000);
-      var s = Math.floor((diff % 60000) / 1000);
+      var m = Math.floor((diff % 3600000)  / 60000);
+      var s = Math.floor((diff % 60000)    / 1000);
       previewTime.textContent = d > 0
-        ? d + 'd ' + pad2(h) + 'h ' + pad2(m) + 'm ' + pad2(s) + 's'
-        : h > 0 ? h + 'h ' + pad2(m) + 'm ' + pad2(s) + 's'
-        : m + 'm ' + pad2(s) + 's';
+        ? d + 'd ' + p2(h) + 'h ' + p2(m) + 'm ' + p2(s) + 's'
+        : h > 0 ? h + 'h ' + p2(m) + 'm ' + p2(s) + 's'
+        : m + 'm ' + p2(s) + 's';
       previewName.textContent = exam.name;
     }
 
