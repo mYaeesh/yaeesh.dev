@@ -35,7 +35,9 @@
       min-height: 100%;
       min-height: 100dvh;
       background-color: var(--bg);
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E"),
+        radial-gradient(ellipse 140% 100% at 50% 40%, #141210 0%, #070605 100%);
       color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
       -webkit-font-smoothing: antialiased;
@@ -290,94 +292,71 @@
     .page-loader {
       position: fixed; inset: 0; z-index: 9000;
       background: var(--bg);
-      display: flex; align-items: center; justify-content: center;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 2rem;
       transition: opacity 0.5s ease;
     }
     @media (prefers-reduced-motion: reduce) { .page-loader { display: none; } }
 
-    /* ── Terminal loader ─────────────────────────────────────────── */
-
-    .terminal-loader {
-      border: 0.1em solid var(--border);
-      background-color: var(--surface);
-      color: var(--amber);
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 1em;
-      width: 13em;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.6);
-      border-radius: 5px;
-      overflow: hidden;
-    }
-
-    .terminal-header {
-      height: 1.6em;
-      background-color: #1e1c1a;
-      display: flex;
-      align-items: center;
-      padding: 0 0.5em;
-      justify-content: space-between;
-    }
-
-    .terminal-title {
-      font-size: 0.72em;
-      color: var(--text-muted);
-      letter-spacing: 0.04em;
-      flex: 1;
-      text-align: center;
-    }
-
-    .terminal-controls { display: flex; gap: 0.35em; }
-    .control { width: 0.65em; height: 0.65em; border-radius: 50%; }
-    .control.close    { background: #e33; }
-    .control.minimize { background: #ee0; }
-    .control.maximize { background: #0b0; }
-
-    .terminal-body {
-      padding: 1em;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 4em;
-    }
-
     /* ── Newton's Cradle ─────────────────────────────────────────── */
 
-    .newtons-cradle {
-      --dot-size: 10px;
-      --string-length: 28px;
-      --dot-color: var(--amber);
-      display: flex; gap: 3px; align-items: flex-end;
-      height: calc(var(--string-length) + var(--dot-size));
+    .nc {
+      --ball:   18px;
+      --string: 56px;
+      display: flex;
+      gap: 0;
+      align-items: flex-end;
     }
 
-    .newtons-cradle__dot {
-      width: var(--dot-size); height: var(--dot-size);
-      background: var(--dot-color); border-radius: 50%;
-      transform-origin: top center; position: relative;
+    .nc-ball {
+      width: var(--ball);
+      height: var(--ball);
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, var(--amber-hi) 0%, var(--amber) 55%, var(--amber-lo) 100%);
+      box-shadow:
+        inset 0 1px 0 rgba(255,228,160,0.3),
+        0 2px 5px rgba(0,0,0,0.55),
+        0 1px 2px rgba(0,0,0,0.4);
+      position: relative;
+      transform-origin: 50% calc(-1 * var(--string));
     }
 
-    .newtons-cradle__dot::before {
-      content: ''; position: absolute;
-      top: calc(-1 * var(--string-length)); left: 50%;
-      width: 1px; height: var(--string-length);
-      background: var(--dot-color); opacity: 0.4;
+    .nc-ball::before {
+      content: '';
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
       transform: translateX(-50%);
+      width: 1px;
+      height: var(--string);
+      background: linear-gradient(to top, var(--amber), transparent);
+      opacity: 0.55;
     }
 
-    .newtons-cradle__dot:first-child {
-      animation: newton-left 0.9s ease-in-out infinite alternate;
-    }
-    .newtons-cradle__dot:last-child {
-      animation: newton-right 0.9s ease-in-out infinite alternate;
+    .nc-ball:first-child { animation: nc-left  2s linear infinite; }
+    .nc-ball:last-child  { animation: nc-right 2s linear infinite; }
+
+    @keyframes nc-left {
+      0%   { transform: rotate(42deg);  animation-timing-function: ease-in;  }
+      25%  { transform: rotate(0deg);   animation-timing-function: linear;   }
+      75%  { transform: rotate(0deg);   animation-timing-function: ease-out; }
+      100% { transform: rotate(42deg);  }
     }
 
-    @keyframes newton-left {
-      0%, 40%   { transform: rotate(0deg); }
-      70%, 100% { transform: rotate(-35deg); }
+    @keyframes nc-right {
+      0%   { transform: rotate(0deg);   animation-timing-function: linear;   }
+      25%  { transform: rotate(0deg);   animation-timing-function: ease-out; }
+      50%  { transform: rotate(-42deg); animation-timing-function: ease-in;  }
+      75%  { transform: rotate(0deg);   animation-timing-function: linear;   }
+      100% { transform: rotate(0deg);   }
     }
-    @keyframes newton-right {
-      0%, 40%   { transform: rotate(35deg); }
-      70%, 100% { transform: rotate(0deg); }
+
+    .loader-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-muted);
     }
 
     /* ── Header clock ────────────────────────────────────────────── */
@@ -416,25 +395,13 @@
 <body>
 
 <div class="page-loader" id="pageLoader">
-  <div class="terminal-loader">
-    <div class="terminal-header">
-      <div class="terminal-controls">
-        <div class="control close"></div>
-        <div class="control minimize"></div>
-        <div class="control maximize"></div>
-      </div>
-      <div class="terminal-title">exam-countdown</div>
-      <div style="width:3em"></div>
-    </div>
-    <div class="terminal-body">
-      <div class="newtons-cradle">
-        <div class="newtons-cradle__dot"></div>
-        <div class="newtons-cradle__dot"></div>
-        <div class="newtons-cradle__dot"></div>
-        <div class="newtons-cradle__dot"></div>
-      </div>
-    </div>
+  <div class="nc">
+    <div class="nc-ball"></div>
+    <div class="nc-ball"></div>
+    <div class="nc-ball"></div>
+    <div class="nc-ball"></div>
   </div>
+  <span class="loader-label">exam-countdown</span>
 </div>
 
 <header class="header">
@@ -758,7 +725,7 @@
     if (!l) return;
     l.style.opacity = '0';
     setTimeout(function () { if (l.parentNode) l.parentNode.removeChild(l); }, 500);
-  }, 1800);
+  }, 1000);
 
   /* ── Header clock ────────────────────────────────────────────── */
 
