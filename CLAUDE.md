@@ -6,8 +6,6 @@ This is the primary working directory for Yaeesh's personal website cluster. It 
 ```
 yaeesh.dev website/
 ├── index.html            ← Homepage draft (local working copy — see note below)
-├── public/
-│   └── click-speed/      ← Click Speed game (placeholder, to be built)
 ├── scoutblog/            ← Jekyll blog (separate git repo)
 ├── .mcp.json             ← MCP servers: shadcn + 21st-dev-magic
 └── .claude/
@@ -47,7 +45,6 @@ Push from inside `scoutblog/` to `github.com/mYaeesh/scoutblog`.
 ### Pages
 - `/` → `index.html` — Homepage (name, tagline, buttons, email)
 - `/exam-countdown` → `exam-countdown/index.html` — Live countdown timer
-- `/click-speed` → `public/click-speed/` — Click speed game (in progress)
 
 ### CSS custom properties (all pages share these)
 ```css
@@ -67,10 +64,9 @@ Push from inside `scoutblog/` to `github.com/mYaeesh/scoutblog`.
 SVG `feTurbulence` fractalNoise at `opacity='0.05'` as body `background-image`. Behind all content.
 
 ### Buttons (homepage)
-Three variants, all via `.btn` base class + modifier:
+Two variants, all via `.btn` base class + modifier:
 - `.btn-amber` — gold gradient, dark text. Primary CTA (Exam Countdown)
 - `.btn-dark` — slate gradient, light text. Secondary (GitHub)
-- `.btn-outline` — transparent, bordered. Ghost (Click Speed)
 
 Hover: `translateY(-2px)` + elevated box-shadow. Active: `translateY(1px)`.
 
