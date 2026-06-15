@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Exam Countdown &mdash; yaeesh.dev</title>
   <meta name="description" content="Live countdown to Term Test, Mock Exams, and O-Level &amp; SSE.">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230c0c0b'/><text x='16' y='23' font-family='system-ui,sans-serif' font-size='22' font-weight='700' text-anchor='middle' fill='%23c8913c'>Y</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23c8913c'/><rect x='2' y='2' width='28' height='28' rx='4' fill='none' stroke='%230c0c0b' stroke-width='1.5' stroke-opacity='0.25'/><text x='16' y='23' font-family='Georgia,serif' font-size='20' font-weight='700' text-anchor='middle' fill='%230c0c0b'>Y</text></svg>">
   <meta name="color-scheme" content="dark">
   <meta name="theme-color" content="#0c0c0b">
   <meta property="og:title" content="Exam Countdown — yaeesh.dev">
@@ -344,10 +344,10 @@
     }
 
     @keyframes nc-right {
-      0%   { transform: rotate(0deg);   animation-timing-function: linear;   }
-      25%  { transform: rotate(0deg);   animation-timing-function: ease-out; }
-      50%  { transform: rotate(-42deg); animation-timing-function: ease-in;  }
-      75%  { transform: rotate(0deg);   animation-timing-function: linear;   }
+      0%   { transform: rotate(0deg);   animation-timing-function: linear; }
+      25%  { transform: rotate(0deg);   animation-timing-function: cubic-bezier(0.39, 0.575, 0.565, 1); }
+      50%  { transform: rotate(-42deg); animation-timing-function: cubic-bezier(0.47, 0, 0.745, 0.715); }
+      75%  { transform: rotate(0deg);   animation-timing-function: linear; }
       100% { transform: rotate(0deg);   }
     }
 
@@ -396,6 +396,7 @@
 
 <div class="page-loader" id="pageLoader">
   <div class="nc">
+    <div class="nc-ball"></div>
     <div class="nc-ball"></div>
     <div class="nc-ball"></div>
     <div class="nc-ball"></div>
@@ -468,6 +469,10 @@
 
   function resolveId(active) {
     try {
+      var p = new URLSearchParams(window.location.search).get('exam');
+      if (p && active.some(function (e) { return e.id === p; })) return p;
+    } catch (_) {}
+    try {
       var saved = localStorage.getItem(STORAGE_KEY);
       if (saved && active.some(function (e) { return e.id === saved; })) return saved;
     } catch (_) {}
@@ -523,7 +528,7 @@
   if (shareBtn) {
     shareBtn.addEventListener('click', function () {
       try {
-        navigator.clipboard.writeText('https://yaeesh.dev/exam-countdown').then(function () {
+        navigator.clipboard.writeText('https://yaeesh.dev/exam-countdown?exam=' + selectedId).then(function () {
           shareBtn.classList.add('copied');
           shareLabel.textContent = 'Copied!';
           clearTimeout(shareCopyTimer);
@@ -625,7 +630,10 @@
       prevActiveIds.forEach(function (id) {
         if (!active.some(function (e) { return e.id === id; })) {
           var gone = EXAMS.filter(function (e) { return e.id === id; })[0];
-          if (gone) showToast(gone.name + ' has passed');
+          if (gone) {
+            showToast(gone.name + ' has passed');
+            try { if (navigator.vibrate) navigator.vibrate([200, 100, 200]); } catch (_) {}
+          }
         }
       });
     }
