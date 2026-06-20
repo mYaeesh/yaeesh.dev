@@ -389,6 +389,12 @@
       .exam-card { min-width: 130px; padding: 0.9rem 1.1rem; }
       .kbd-hint  { display: none; }
       .digits-row { gap: 0.75rem; }
+      .digit-unit {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 0.5rem 0.75rem;
+      }
     }
   </style>
 </head>
@@ -435,8 +441,8 @@
   // All times MVT (UTC+5). utcMs = MVT − 5 h. startMs = when countdown began.
 
   var EXAMS = [
-    { id: 'term-test',  name: 'Term Test',      startMs: Date.UTC(2026, 3,  1, 0, 0, 0), utcMs: Date.UTC(2026, 5, 30, 2, 10, 0), display: '30 Jun 2026 · 7:10 AM MVT'  },
-    { id: 'mock-exams', name: 'Mock Exams',     startMs: Date.UTC(2026, 5,  1, 0, 0, 0), utcMs: Date.UTC(2026, 8,  1, 4, 30, 0), display: '1 Sep 2026 · 9:30 AM MVT'   },
+    { id: 'term-test',  name: 'Term Test',      startMs: Date.UTC(2026, 3,  1, 0, 0, 0), utcMs: Date.UTC(2026, 5, 30, 2, 15, 0), display: '30 Jun 2026 · 7:15 AM MVT'  },
+    { id: 'mock-exams', name: 'Mock Exams',     startMs: Date.UTC(2026, 5,  1, 0, 0, 0), utcMs: Date.UTC(2026, 8,  1, 2, 15, 0), display: '1 Sep 2026 · 7:15 AM MVT'   },
     { id: 'o-level',    name: 'O‑Level & SSE', startMs: Date.UTC(2026, 5,  1, 0, 0, 0), utcMs: Date.UTC(2026, 8, 20, 4, 30, 0), display: '20 Sep 2026 · 9:30 AM MVT'  },
   ];
 
