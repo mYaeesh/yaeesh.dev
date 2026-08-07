@@ -4,15 +4,174 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
-  <title>ASMUN - Canada</title>
+  <title>ASMUN — Canada</title>
+  <meta name="description" content="Delegate prep toolkit for Canada at ASMUN.">
   <link rel="icon" href="data:,">
+  <script>
+    // Applied before first paint to avoid a flash of the wrong theme.
+    (function () {
+      try {
+        var stored = localStorage.getItem('asmun-theme');
+        if (stored === 'light' || stored === 'dark') {
+          document.documentElement.setAttribute('data-theme', stored);
+        }
+      } catch (err) {}
+    })();
+  </script>
   <link rel="stylesheet" href="css/tokens.css">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/print.css" media="print">
   <script type="module" src="js/main.js"></script>
 </head>
 <body>
-  <h1>ASMUN - Canada</h1>
-  <p id="build-timestamp"></p>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="brand" href="#top">
+        ASMUN <span class="brand__sub">Canada</span>
+      </a>
+      <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle dark mode" aria-pressed="false">
+        <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.5"></circle>
+          <path d="M12 2.5v2.5M12 19v2.5M4.6 4.6l1.8 1.8M17.6 17.6l1.8 1.8M2.5 12H5M19 12h2.5M4.6 19.4l1.8-1.8M17.6 6.4l1.8-1.8"></path>
+        </svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5Z"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="shell">
+    <nav class="side-nav" aria-label="Section navigation">
+      <ul class="side-nav__list">
+        <li><a class="side-nav__link" href="#blocs">Blocs</a></li>
+        <li><a class="side-nav__link" href="#glossary">Glossary</a></li>
+        <li><a class="side-nav__link" href="#facts">Facts</a></li>
+        <li><a class="side-nav__link" href="#questions">Questions</a></li>
+        <li><a class="side-nav__link" href="#allies">Allies</a></li>
+        <li><a class="side-nav__link" href="#roster">Roster</a></li>
+        <li><a class="side-nav__link" href="#speeches">Speeches</a></li>
+        <li><a class="side-nav__link" href="#phrases">Phrases</a></li>
+        <li><a class="side-nav__link" href="#clauses">Clauses</a></li>
+        <li><a class="side-nav__link" href="#tools">Tools</a></li>
+        <li><a class="side-nav__link" href="#study">Study</a></li>
+      </ul>
+    </nav>
+
+    <main id="main" class="content">
+      <section id="blocs" class="panel-section">
+        <h2>Blocs</h2>
+        <div class="card">
+          <p>Regional and political groupings, and where Canada tends to line up with each. Not yet populated.</p>
+          <div class="field"><span class="field__label">Status</span><span class="field__value">Placeholder</span></div>
+        </div>
+      </section>
+
+      <section id="glossary" class="panel-section">
+        <h2>Glossary</h2>
+        <div class="card">
+          <p>Committee and procedural terms, defined plainly. Not yet populated.</p>
+          <div class="field"><span class="field__label">Status</span><span class="field__value">Placeholder</span></div>
+        </div>
+      </section>
+
+      <section id="facts" class="panel-section">
+        <h2>Facts</h2>
+        <div class="card">
+          <p>Quick-reference figures on Canada's positions and record. Not yet populated.</p>
+          <div class="field-row">
+            <div class="field"><span class="field__label">Status</span><span class="field__value">Placeholder</span></div>
+            <div class="field"><span class="field__label">Entries</span><span class="field__value field__value--numeric">0</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="questions" class="panel-section">
+        <h2>Questions</h2>
+        <div class="card">
+          <p>Anticipated questions from the floor, with response angles. Not yet populated.</p>
+          <div class="field"><span class="field__label">Status</span><span class="field__value">Placeholder</span></div>
+        </div>
+      </section>
+
+      <section id="allies" class="panel-section">
+        <h2>Allies</h2>
+        <div class="card">
+          <p>Likely co-sponsors and delegations to coordinate with. Not yet populated.</p>
+          <div class="field"><span class="field__label">Status</span><span class="field__value">Placeholder</span></div>
+        </div>
+      </section>
+
+      <section id="roster" class="panel-section">
+        <h2>Roster</h2>
+        <div class="card">
+          <p>Full committee roster of member states. Not yet populated.</p>
+          <div class="field-row">
+            <div class="field"><span class="field__label">Status</span><span class="field__value">Placeholder</span></div>
+            <div class="field"><span class="field__label">Members</span><span class="field__value field__value--numeric">0</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="speeches" class="panel-section">
+        <h2>Speeches</h2>
+        <div class="card">
+          <p>Opening statement and rebuttal drafts. Not yet populated.</p>
+          <div class="field"><span class="field__label">Status</span><span class="field__value">Placeholder</span></div>
+        </div>
+      </section>
+
+      <section id="phrases" class="panel-section">
+        <h2>Phrases</h2>
+        <div class="card">
+          <p>Ready-made diplomatic phrasing for common moments. Not yet populated.</p>
+          <div class="field"><span class="field__label">Status</span><span class="field__value">Placeholder</span></div>
+        </div>
+      </section>
+
+      <section id="clauses" class="panel-section">
+        <h2>Clauses</h2>
+        <div class="card">
+          <p>Reusable operative and preambulatory clause language. Not yet populated.</p>
+          <div class="field"><span class="field__label">Status</span><span class="field__value">Placeholder</span></div>
+        </div>
+      </section>
+
+      <section id="tools" class="panel-section">
+        <h2>Tools</h2>
+        <div class="card">
+          <p>Timers, counters, and other in-committee utilities. Not yet populated.</p>
+          <div class="field"><span class="field__label">Status</span><span class="field__value">Placeholder</span></div>
+        </div>
+      </section>
+
+      <section id="study" class="panel-section">
+        <h2>Study</h2>
+        <div class="card">
+          <p>Background guide notes and self-quizzing. Not yet populated.</p>
+          <div class="field"><span class="field__label">Status</span><span class="field__value">Placeholder</span></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <nav class="tab-bar" aria-label="Section navigation">
+    <ul class="tab-bar__list">
+      <li class="tab-bar__item"><a class="tab-bar__link" href="#blocs">Blocs</a></li>
+      <li class="tab-bar__item"><a class="tab-bar__link" href="#glossary">Glossary</a></li>
+      <li class="tab-bar__item"><a class="tab-bar__link" href="#facts">Facts</a></li>
+      <li class="tab-bar__item"><a class="tab-bar__link" href="#questions">Questions</a></li>
+      <li class="tab-bar__item"><a class="tab-bar__link" href="#allies">Allies</a></li>
+      <li class="tab-bar__item"><a class="tab-bar__link" href="#roster">Roster</a></li>
+      <li class="tab-bar__item"><a class="tab-bar__link" href="#speeches">Speeches</a></li>
+      <li class="tab-bar__item"><a class="tab-bar__link" href="#phrases">Phrases</a></li>
+      <li class="tab-bar__item"><a class="tab-bar__link" href="#clauses">Clauses</a></li>
+      <li class="tab-bar__item"><a class="tab-bar__link" href="#tools">Tools</a></li>
+      <li class="tab-bar__item"><a class="tab-bar__link" href="#study">Study</a></li>
+    </ul>
+  </nav>
 </body>
 </html>

@@ -1,1 +1,194 @@
-/* ASMUN - tokens.css: CSS custom property definitions. Not yet populated. */
+/* ASMUN — tokens.css
+   Design tokens: palette, semantic aliases, type scale, spacing, radii, shadows.
+   A subtle, diplomatic Canadian palette — restrained, document-like. No flag graphics,
+   no literal maple-leaf branding anywhere in this system.
+*/
+
+:root {
+  /* ---------------------------------------------------------------------
+     Raw palette — red / navy / brass / paper, each with tints & shades.
+     Do not use these directly in component CSS; use the semantic aliases
+     below. The exceptions are --c-red for isolated alert emphasis and
+     --c-accent-ink where a brass-toned but text-safe colour is needed.
+  --------------------------------------------------------------------- */
+  --c-red: #9B2C2C;
+  --c-red-dark: #7A2323;
+  --c-red-light: #C15050;
+  --c-red-pale: #F3DEDE;
+
+  --c-navy: #1B2A41;
+  --c-navy-900: #121B29;
+  --c-navy-700: #2E4059;
+  --c-navy-500: #51607A;
+  --c-navy-300: #8C97A8;
+  --c-navy-100: #DDE1E8;
+
+  --c-brass: #B08D57;
+  --c-brass-dark: #7A5F35;   /* text-safe on paper: ~5.3:1 */
+  --c-brass-light: #C9AD7F;
+  --c-brass-pale: #EDE4D2;
+
+  --c-paper: #F5F1E8;
+  --c-paper-dim: #EFEAE0;
+  --c-paper-shade: #DDD5C2;
+  --c-paper-shade-hi: #C7BCA0;
+
+  /* ---------------------------------------------------------------------
+     Semantic aliases — light theme (default). Components consume ONLY
+     these. Verified contrast (WCAG relative luminance) against --bg:
+       --fg        on --bg  ≈ 12.8:1
+       --fg-muted  on --bg  ≈  5.6:1
+       --accent-ink on --bg ≈  5.3:1
+       --danger    on --bg  ≈  6.7:1
+     Raw --accent (brass) is NOT text-safe on paper (~2.7:1) — decorative
+     use only (rules, borders, icons, progress fills).
+  --------------------------------------------------------------------- */
+  --bg: var(--c-paper);
+  --surface: var(--c-paper-dim);
+  --surface-raised: #FFFFFF;
+  --fg: var(--c-navy);
+  --fg-muted: var(--c-navy-500);
+  --fg-on-accent: var(--c-paper);
+  --border: var(--c-paper-shade);
+  --border-hi: var(--c-paper-shade-hi);
+  --accent: var(--c-brass);
+  --accent-ink: var(--c-brass-dark);
+  --danger: var(--c-red);
+  --danger-ink: var(--c-red-dark);
+  --danger-bg: var(--c-red-pale);
+  --link: var(--c-brass-dark);
+  --link-hover: var(--c-navy);
+  --focus-ring: var(--c-brass-dark);
+
+  /* ---------------------------------------------------------------------
+     Typography — system stacks only, renders instantly offline.
+  --------------------------------------------------------------------- */
+  --font-serif: Georgia, "Iowan Old Style", "Palatino Linotype", "URW Palladio L", P052, "Noto Serif", serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  --font-mono: ui-monospace, "Cascadia Code", "Segoe UI Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+
+  /* Modular scale, ~1.25 ratio from a 16px base */
+  --text-xs: 0.75rem;    /* 12px */
+  --text-sm: 0.875rem;   /* 14px */
+  --text-base: 1rem;     /* 16px */
+  --text-md: 1.125rem;   /* 18px */
+  --text-lg: 1.25rem;    /* 20px */
+  --text-xl: 1.563rem;   /* 25px */
+  --text-2xl: 1.953rem;  /* 31px */
+  --text-3xl: 2.441rem;  /* 39px */
+  --text-4xl: 3.052rem;  /* 49px */
+
+  --leading-tight: 1.2;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.7;
+
+  /* ---------------------------------------------------------------------
+     Spacing scale — 4px base unit.
+  --------------------------------------------------------------------- */
+  --space-1: 0.25rem;  /* 4px */
+  --space-2: 0.5rem;   /* 8px */
+  --space-3: 0.75rem;  /* 12px */
+  --space-4: 1rem;     /* 16px */
+  --space-5: 1.5rem;   /* 24px */
+  --space-6: 2rem;     /* 32px */
+  --space-7: 3rem;     /* 48px */
+  --space-8: 4rem;     /* 64px */
+
+  /* ---------------------------------------------------------------------
+     Radii & shadows
+  --------------------------------------------------------------------- */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+
+  --shadow-sm: 0 1px 2px rgba(27, 42, 65, 0.08), 0 1px 1px rgba(27, 42, 65, 0.06);
+  --shadow-md: 0 6px 16px rgba(27, 42, 65, 0.14), 0 2px 6px rgba(27, 42, 65, 0.08);
+
+  /* ---------------------------------------------------------------------
+     Layout constants
+  --------------------------------------------------------------------- */
+  --content-measure: 42rem;    /* reading column max-width */
+  --shell-max: 1200px;
+  --sidebar-width: 240px;
+  --header-height: 3.5rem;
+  --tabbar-height: 3.75rem;
+
+  /* ---------------------------------------------------------------------
+     Z-index scale
+  --------------------------------------------------------------------- */
+  --z-header: 100;
+  --z-tabbar: 100;
+  --z-skiplink: 200;
+}
+
+/* ===========================================================================
+   Dark mode — system preference default. Redefines ONLY semantic aliases.
+   "Keep the brass, deepen the navy, warm the near-black" — the background
+   is a warm, deep navy-black (not a cold pure black), text is a paper-warm
+   near-white, and brass gets a touch lighter so it stays legible as text.
+
+   Verified contrast against dark --bg (#15141A):
+     --fg          ≈ 14.7:1
+     --fg-muted    ≈  6.9:1
+     --accent-ink  ≈  8.0:1
+     --danger      ≈  6.1:1
+=========================================================================== */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15141A;
+    --surface: #1D1B22;
+    --surface-raised: #232028;
+    --fg: #EDE6D8;
+    --fg-muted: #A79E8E;
+    --fg-on-accent: #15141A;
+    --border: #322E38;
+    --border-hi: #4A4453;
+    --accent: #C9A66E;
+    --accent-ink: #C9A66E;
+    --danger: #D97A7A;
+    --danger-ink: #E39A9A;
+    --danger-bg: #3A2020;
+    --link: #C9A66E;
+    --link-hover: #EDE6D8;
+    --focus-ring: #C9A66E;
+  }
+}
+
+/* Manual override — wins regardless of system preference */
+:root[data-theme="dark"] {
+  --bg: #15141A;
+  --surface: #1D1B22;
+  --surface-raised: #232028;
+  --fg: #EDE6D8;
+  --fg-muted: #A79E8E;
+  --fg-on-accent: #15141A;
+  --border: #322E38;
+  --border-hi: #4A4453;
+  --accent: #C9A66E;
+  --accent-ink: #C9A66E;
+  --danger: #D97A7A;
+  --danger-ink: #E39A9A;
+  --danger-bg: #3A2020;
+  --link: #C9A66E;
+  --link-hover: #EDE6D8;
+  --focus-ring: #C9A66E;
+}
+
+:root[data-theme="light"] {
+  --bg: var(--c-paper);
+  --surface: var(--c-paper-dim);
+  --surface-raised: #FFFFFF;
+  --fg: var(--c-navy);
+  --fg-muted: var(--c-navy-500);
+  --fg-on-accent: var(--c-paper);
+  --border: var(--c-paper-shade);
+  --border-hi: var(--c-paper-shade-hi);
+  --accent: var(--c-brass);
+  --accent-ink: var(--c-brass-dark);
+  --danger: var(--c-red);
+  --danger-ink: var(--c-red-dark);
+  --danger-bg: var(--c-red-pale);
+  --link: var(--c-brass-dark);
+  --link-hover: var(--c-navy);
+  --focus-ring: var(--c-brass-dark);
+}

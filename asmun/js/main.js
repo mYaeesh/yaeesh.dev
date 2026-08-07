@@ -1,8 +1,5 @@
-import { ping } from './modules/ping.js';
+import { initThemeToggle } from './modules/theme.js';
+import { initActiveNav } from './modules/nav.js';
 
-console.log('ES module loaded:', ping());
-
-const timestampEl = document.getElementById('build-timestamp');
-if (timestampEl) {
-  timestampEl.textContent = new Date().toISOString();
-}
+initThemeToggle();
+initActiveNav();
