@@ -1,5 +1,5 @@
-import { initThemeToggle } from './modules/theme.js';
-import { initActiveNav } from './modules/nav.js';
+import { initThemeToggle } from './modules/theme.js?v=3';
+import { initActiveNav } from './modules/nav.js?v=3';
 
 initThemeToggle();
 initActiveNav();
