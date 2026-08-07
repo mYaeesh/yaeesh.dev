@@ -70,6 +70,7 @@ body {
   font-size: var(--text-base);
   line-height: var(--leading-normal);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 }
 
@@ -87,6 +88,7 @@ h6 {
   line-height: var(--leading-tight);
   color: var(--fg);
   margin: 0 0 var(--space-4);
+  text-wrap: balance;
 }
 
 h1 {
@@ -121,6 +123,7 @@ h6 {
 p {
   margin: 0 0 var(--space-4);
   max-width: var(--content-measure);
+  text-wrap: pretty;
 }
 
 small,
@@ -137,6 +140,9 @@ a {
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.15em;
+  transition-property: color;
+  transition-duration: 150ms;
+  transition-timing-function: ease-out;
 }
 
 a:hover {
@@ -161,6 +167,7 @@ ol {
 
 li {
   margin-bottom: var(--space-2);
+  text-wrap: pretty;
 }
 
 li:last-child {
@@ -185,6 +192,7 @@ dt {
 dd {
   margin: 0 0 var(--space-3);
   color: var(--fg-muted);
+  text-wrap: pretty;
 }
 
 /* ---------------------------------------------------------------------
@@ -232,6 +240,12 @@ thead th {
 
 tbody tr:last-child td {
   border-bottom: none;
+}
+
+tbody tr {
+  transition-property: background-color;
+  transition-duration: 150ms;
+  transition-timing-function: ease-out;
 }
 
 tbody tr:hover {

@@ -79,6 +79,7 @@
    Theme toggle
 --------------------------------------------------------------------- */
 .theme-toggle {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -88,39 +89,62 @@
   border: 1px solid var(--border-hi);
   color: var(--fg);
   background: var(--surface-raised);
+  transition-property: border-color, transform;
+  transition-duration: 150ms;
+  transition-timing-function: ease-out;
 }
 
 .theme-toggle:hover {
   border-color: var(--accent);
 }
 
+.theme-toggle:active {
+  transform: scale(0.96);
+}
+
 .theme-toggle svg {
+  position: absolute;
+  inset: 0;
+  margin: auto;
   width: 20px;
   height: 20px;
   stroke: currentColor;
   fill: none;
   stroke-width: 1.75;
+  transition-property: opacity, transform;
+  transition-duration: 150ms;
+  transition-timing-function: ease-out;
+}
+
+.theme-toggle .icon-sun {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
 }
 
 .theme-toggle .icon-moon {
-  display: none;
+  opacity: 0;
+  transform: scale(0.5) rotate(-30deg);
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .theme-toggle .icon-sun {
-    display: none;
+    opacity: 0;
+    transform: scale(0.5) rotate(30deg);
   }
   :root:not([data-theme="light"]) .theme-toggle .icon-moon {
-    display: inline-flex;
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
   }
 }
 
 :root[data-theme="dark"] .theme-toggle .icon-sun {
-  display: none;
+  opacity: 0;
+  transform: scale(0.5) rotate(30deg);
 }
 
 :root[data-theme="dark"] .theme-toggle .icon-moon {
-  display: inline-flex;
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
 }
 
 /* ---------------------------------------------------------------------
@@ -174,6 +198,9 @@
   font-size: var(--text-sm);
   border-left: 2px solid transparent;
   margin-left: -2px;
+  transition-property: color, border-left-color;
+  transition-duration: 150ms;
+  transition-timing-function: ease-out;
 }
 
 .side-nav__link:hover {
@@ -244,6 +271,9 @@
   font-weight: 600;
   white-space: nowrap;
   border-top: 2px solid transparent;
+  transition-property: color, border-top-color;
+  transition-duration: 150ms;
+  transition-timing-function: ease-out;
 }
 
 .tab-bar__link.is-active {
@@ -373,6 +403,13 @@
   font-weight: 700;
   text-decoration: none;
   border: 1px solid transparent;
+  transition-property: background-color, border-color, color, transform;
+  transition-duration: 150ms;
+  transition-timing-function: ease-out;
+}
+
+.btn:active {
+  transform: scale(0.96);
 }
 
 .btn-primary {
