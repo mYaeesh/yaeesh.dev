@@ -11,8 +11,8 @@
 // size and simply gets wider. Category is encoded three ways (fill colour, fill
 // pattern, and an uppercase text label) so it survives greyscale and colour-blindness.
 
-import { allies } from '../../data/allies.js?v=4';
-import { el, mountSection, highlight } from '../modules/render.js?v=4';
+import { allies } from '../../data/allies.js?v=5';
+import { el, mountSection, highlight } from '../modules/render.js?v=5';
 
 const MAX_SCORE = 10;
 
@@ -39,7 +39,7 @@ function allyRow(entry, ctx) {
   row.append(
     el('header', { class: 'ally__head' }, [
       el('h3', { class: 'ally__name' }, [
-        el('span', { class: 'ally__flag', 'aria-hidden': 'true', text: entry.flag }),
+        entry.flag ? el('span', { class: 'ally__flag', 'aria-hidden': 'true', text: entry.flag }) : null,
         highlight(entry.country, q),
       ]),
       el('p', { class: 'ally__meta' }, [
@@ -77,8 +77,8 @@ export function initAllies() {
     id: 'allies',
     title: 'Ally scores',
     blurb:
-      `${allies.length} delegations scored 1–10 against Canada, highest first. ` +
-      'Every score here is a placeholder — re-score them yourself.',
+      `All ${allies.length} committee delegations scored 1–10 against Canada, highest first. ` +
+      '10 is the closest ally, 1 the most hostile.',
     items: sorted,
     itemView: allyRow,
     controls: {

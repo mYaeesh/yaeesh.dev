@@ -1,18 +1,20 @@
 // ASMUN — sections/blocs.js
 // Bloc map. Short/detailed toggle plus an in-section filter; both views searchable.
 
-import { blocs } from '../../data/blocs.js?v=4';
-import { el, mountSection, highlight } from '../modules/render.js?v=4';
+import { blocs } from '../../data/blocs.js?v=5';
+import { el, mountSection, highlight } from '../modules/render.js?v=5';
 
 /** Everything about a bloc, flattened, so the filter searches detail text too. */
 function blocText(bloc) {
   return [
     bloc.name,
     bloc.members.join(' '),
+    bloc.canadaRole ?? '',
     bloc.summary,
-    bloc.detail.join(' '),
-    bloc.attacks.map((a) => `${a.target} ${a.grounds}`).join(' '),
-    bloc.canadaLine ?? '',
+    (bloc.breakdown?.whatTheyWant ?? []).join(' '),
+    (bloc.breakdown?.faultLines ?? []).join(' '),
+    bloc.whoTheyAttack ?? '',
+    bloc.canadaStrategyMapping ?? '',
   ].join(' ');
 }
 
@@ -24,7 +26,15 @@ function blocCard(bloc, ctx) {
 
   card.append(
     el('header', { class: 'bloc-card__head' }, [
-      el('h3', { class: 'bloc-card__name' }, [highlight(bloc.name, q)]),
+      el('h3', { class: 'bloc-card__name' }, [
+        highlight(bloc.name, q),
+        bloc.canadaRole
+          ? el('span', {
+              class: 'badge badge--role',
+              text: `Canada: ${bloc.canadaRole}`,
+            })
+          : null,
+      ]),
       el(
         'p',
         { class: 'bloc-card__members' },
@@ -36,37 +46,51 @@ function blocCard(bloc, ctx) {
   card.append(el('p', { class: 'bloc-card__summary' }, [highlight(bloc.summary, q)]));
 
   if (detailed) {
-    card.append(el('h4', { class: 'bloc-card__subhead', text: 'Position in detail' }));
-    card.append(
-      el(
-        'ul',
-        { class: 'bloc-card__detail' },
-        bloc.detail.map((point) => el('li', {}, [highlight(point, q)]))
-      )
-    );
-
-    card.append(
-      el('h4', { class: 'bloc-card__subhead', text: 'Who they attack, and on what grounds' })
-    );
-    card.append(
-      el(
-        'ul',
-        { class: 'attack-list' },
-        bloc.attacks.map((attack) =>
-          el('li', { class: 'attack' }, [
-            el('span', { class: 'attack__target' }, [highlight(attack.target, q)]),
-            el('span', { class: 'attack__grounds' }, [highlight(attack.grounds, q)]),
-          ])
+    const wants = bloc.breakdown?.whatTheyWant ?? [];
+    if (wants.length) {
+      card.append(el('h4', { class: 'bloc-card__subhead', text: 'What they want' }));
+      card.append(
+        el(
+          'ul',
+          { class: 'bloc-card__detail' },
+          wants.map((point) => el('li', {}, [highlight(point, q)]))
         )
-      )
-    );
+      );
+    }
+
+    const faults = bloc.breakdown?.faultLines ?? [];
+    if (faults.length) {
+      card.append(
+        el('h4', { class: 'bloc-card__subhead', text: 'Fault lines inside the bloc' })
+      );
+      card.append(
+        el(
+          'ul',
+          { class: 'bloc-card__detail' },
+          faults.map((point) => el('li', {}, [highlight(point, q)]))
+        )
+      );
+    }
+
+    if (bloc.whoTheyAttack) {
+      card.append(
+        el('h4', { class: 'bloc-card__subhead', text: 'Who they attack, and on what grounds' })
+      );
+      card.append(
+        el('ul', { class: 'attack-list' }, [
+          el('li', { class: 'attack' }, [
+            el('span', { class: 'attack__grounds' }, [highlight(bloc.whoTheyAttack, q)]),
+          ]),
+        ])
+      );
+    }
   }
 
-  if (bloc.canadaLine) {
+  if (bloc.canadaStrategyMapping) {
     card.append(
       el('p', { class: 'bloc-card__canada' }, [
         el('span', { class: 'bloc-card__canada-label', text: 'Canada' }),
-        highlight(bloc.canadaLine, q),
+        highlight(bloc.canadaStrategyMapping, q),
       ])
     );
   }

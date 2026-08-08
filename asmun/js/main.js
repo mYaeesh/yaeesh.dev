@@ -2,17 +2,17 @@
 // Boot order matters: every section must mount before initSearch() runs, because
 // mountSection() is what registers a section's items with the global search index.
 
-import { initThemeToggle } from './modules/theme.js?v=4';
-import { initActiveNav } from './modules/nav.js?v=4';
-import { initSearch } from './modules/search.js?v=4';
+import { initThemeToggle } from './modules/theme.js?v=5';
+import { initActiveNav } from './modules/nav.js?v=5';
+import { initSearch } from './modules/search.js?v=5';
 
-import { initAgenda } from './sections/agenda.js?v=4';
-import { initBlocs } from './sections/blocs.js?v=4';
-import { initGlossary } from './sections/glossary.js?v=4';
-import { initFacts } from './sections/facts.js?v=4';
-import { initQuestions } from './sections/questions.js?v=4';
-import { initAllies } from './sections/allies.js?v=4';
-import { initRoster } from './sections/roster.js?v=4';
+import { initAgenda } from './sections/agenda.js?v=5';
+import { initBlocs } from './sections/blocs.js?v=5';
+import { initGlossary } from './sections/glossary.js?v=5';
+import { initFacts } from './sections/facts.js?v=5';
+import { initQuestions } from './sections/questions.js?v=5';
+import { initAllies } from './sections/allies.js?v=5';
+import { initRoster } from './sections/roster.js?v=5';
 
 initThemeToggle();
 

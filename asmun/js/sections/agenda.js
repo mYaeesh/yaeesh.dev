@@ -1,32 +1,65 @@
 // ASMUN — sections/agenda.js
 // Live agenda: the resolution deadline as a large prominent countdown, a countdown
-// to the next milestone, and the session list with the current session highlighted.
+// to the next session, and the session list with the current session highlighted.
 //
 // One setInterval drives every clock on the page. It ticks each second, but only
 // writes to the DOM when a rendered string actually changes, and it fully re-renders
-// the list only when the *current* entry changes — so a two-day agenda costs almost
-// nothing to keep live.
+// the list only when the *current* session changes — so the day costs almost nothing
+// to keep live.
+//
+// TIMES: data/schedule.js stores wall-clock "HH:MM" plus one `timezone` offset for the
+// whole day. Rows display the wall clock verbatim — that is what the dais will call out,
+// and it stays correct no matter where the delegate's laptop thinks it is. Only the
+// countdowns convert to real instants, using date + time + timezone.
 //
 // CLOCK OVERRIDE: ?now=<ISO timestamp> pretends it is that moment, so the mid-session
 // states can be previewed without waiting for the conference. Documented in
 // data/schedule.js. Without it, the real clock is used.
 
-import { schedule } from '../../data/schedule.js?v=4';
-import { el, mountSection, highlight, groupBy } from '../modules/render.js?v=4';
+import { schedule } from '../../data/schedule.js?v=5';
+import { el, mountSection, highlight, groupBy } from '../modules/render.js?v=5';
 
 const SECOND = 1000;
 
+const MONTHS = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
+
+/** "2026-08-10" -> "10 August 2026". Built from the string parts, so no timezone can shift it. */
+function longDate(iso) {
+  const [year, month, day] = String(iso ?? '').split('-').map(Number);
+  if (!year || !month || !day) return String(iso ?? '');
+  return `${day} ${MONTHS[month - 1] ?? month} ${year}`;
+}
+
+/** The one heading every row groups under, e.g. "Day 2 — Monday 10 August 2026". */
+const dayHeading = [
+  schedule.conferenceDay,
+  [schedule.dayOfWeek, longDate(schedule.date)].filter(Boolean).join(' '),
+]
+  .filter(Boolean)
+  .join(' — ');
+
+/** date + "HH:MM" + offset -> epoch ms. NaN if any part is missing or malformed. */
+function instant(time) {
+  if (!schedule.date || !time) return NaN;
+  return Date.parse(`${schedule.date}T${time}:00${schedule.timezone ?? ''}`);
+}
+
 /** Parsed once. Invalid timestamps become NaN and are reported rather than hidden. */
-const entries = schedule.map((entry) => ({
-  ...entry,
-  startMs: Date.parse(entry.startsAt),
-  endMs: Date.parse(entry.endsAt),
+const entries = (schedule.sessions ?? []).map((session) => ({
+  ...session,
+  session: dayHeading,
+  startMs: instant(session.start),
+  endMs: instant(session.end),
+  isDeadline: session.type === 'deadline',
 }));
 
 const invalid = entries.filter((e) => Number.isNaN(e.startMs) || Number.isNaN(e.endMs));
 if (invalid.length) {
   console.warn(
-    '[agenda] unparseable timestamps in data/schedule.js:',
+    '[agenda] unparseable times in data/schedule.js:',
     invalid.map((e) => e.id)
   );
 }
@@ -51,17 +84,11 @@ try {
 const now = () => Date.now() + clockOffset;
 
 // --- formatting ------------------------------------------------------------
-const timeFmt = new Intl.DateTimeFormat('en-GB', {
-  hour: '2-digit',
-  minute: '2-digit',
-  hour12: false,
-});
-
+/** The conference wall clock, straight from the data. */
 function clockRange(entry) {
-  if (Number.isNaN(entry.startMs)) return 'time not set';
-  const start = timeFmt.format(entry.startMs);
-  if (Number.isNaN(entry.endMs) || entry.endMs === entry.startMs) return start;
-  return `${start} – ${timeFmt.format(entry.endMs)}`;
+  if (!entry.start) return 'time not set';
+  if (!entry.end || entry.end === entry.start) return entry.start;
+  return `${entry.start} – ${entry.end}`;
 }
 
 /** Split a duration into padded parts. Days only appear when there are any. */
@@ -117,15 +144,32 @@ function paintCountdown(container, ms, expiredText) {
 }
 
 // --- state ------------------------------------------------------------------
-const deadline =
+// The deadline row in the session list is the countdown target. If nobody marked one
+// type: 'deadline', fall back to resolutionDeadline.time so the card still counts.
+const deadlineEntry =
   entries.filter((e) => e.isDeadline).sort((a, b) => a.startMs - b.startMs)[0] ?? null;
+
+const deadlineMs = deadlineEntry
+  ? deadlineEntry.startMs
+  : instant(schedule.resolutionDeadline?.time);
+
+const deadlineWhen = deadlineEntry
+  ? `${dayHeading} · ${clockRange(deadlineEntry)}`
+  : schedule.resolutionDeadline?.time
+    ? `${dayHeading} · ${schedule.resolutionDeadline.time}`
+    : 'No deadline set in schedule.js.';
 
 function currentEntry(t) {
   return entries.find((e) => t >= e.startMs && t < e.endMs) ?? null;
 }
 
-function nextMilestone(t) {
-  return entries.filter((e) => e.isMilestone && e.startMs > t).sort((a, b) => a.startMs - b.startMs)[0] ?? null;
+/** Next session to start. The deadline marker is excluded — it has its own big card. */
+function nextUp(t) {
+  return (
+    entries
+      .filter((e) => !e.isDeadline && e.startMs > t)
+      .sort((a, b) => a.startMs - b.startMs)[0] ?? null
+  );
 }
 
 function statusOf(entry, t) {
@@ -155,15 +199,14 @@ function agendaRow(entry, ctx) {
   );
 
   const body = el('div', { class: 'agenda-row__body' });
-  body.append(el('h4', { class: 'agenda-row__label' }, [highlight(entry.label, q)]));
-  if (entry.isMilestone && !entry.isDeadline) {
-    body.append(el('span', { class: 'badge badge--milestone', text: 'MILESTONE' }));
-  }
+  body.append(el('h4', { class: 'agenda-row__label' }, [highlight(entry.name, q)]));
   if (entry.isDeadline) {
     body.append(el('span', { class: 'badge badge--danger', text: 'DEADLINE' }));
+  } else if (entry.type) {
+    body.append(el('span', { class: 'badge badge--type', text: entry.type.toUpperCase() }));
   }
-  if (entry.note) {
-    body.append(el('p', { class: 'agenda-row__note' }, [highlight(entry.note, q)]));
+  if (entry.whatsHappening) {
+    body.append(el('p', { class: 'agenda-row__note' }, [highlight(entry.whatsHappening, q)]));
   }
   row.append(body);
 
@@ -174,7 +217,9 @@ export function initAgenda() {
   const section = mountSection({
     id: 'agenda',
     title: 'Agenda',
-    blurb: 'Live countdown and session order. All times are placeholders until you replace them.',
+    blurb:
+      `${dayHeading}. Times are a template built from the standard committee structure — ` +
+      'replace them in data/schedule.js once the real ASMUN schedule lands.',
     items: entries,
     itemView: agendaRow,
     renderList: (container, items, ctx) => {
@@ -188,12 +233,12 @@ export function initAgenda() {
     controls: {
       search: true,
       searchLabel: 'Filter agenda',
-      searchPlaceholder: 'session, break, deadline…',
+      searchPlaceholder: 'caucus, crisis, deadline…',
     },
     searchIndex: (entry) => ({
-      title: entry.label,
+      title: entry.name,
       snippet: `${entry.session} · ${clockRange(entry)}`,
-      keywords: entry.note ?? '',
+      keywords: `${entry.type ?? ''} ${entry.whatsHappening ?? ''}`,
     }),
   });
 
@@ -206,24 +251,27 @@ export function initAgenda() {
   // Prominent: resolution deadline.
   const deadlineCd = el('div', { class: 'cd cd--deadline', role: 'timer' });
   const deadlineCard = el('div', { class: 'card card--raised deadline-card' }, [
-    el('p', { class: 'deadline-card__eyebrow', text: 'Resolution deadline' }),
-    deadlineCd,
     el('p', {
-      class: 'deadline-card__when',
-      text: deadline
-        ? `${deadline.session} · ${clockRange(deadline)}`
-        : 'No entry in schedule.js is marked isDeadline.',
+      class: 'deadline-card__eyebrow',
+      text: schedule.resolutionDeadline?.label ?? 'Resolution deadline',
     }),
+    deadlineCd,
+    el('p', { class: 'deadline-card__when', text: deadlineWhen }),
   ]);
+  if (schedule.resolutionDeadline?.note) {
+    deadlineCard.append(
+      el('p', { class: 'deadline-card__note', text: schedule.resolutionDeadline.note })
+    );
+  }
   dash.append(deadlineCard);
 
-  // Secondary: next milestone / current session.
+  // Secondary: next session / current session.
   const nextCd = el('div', { class: 'cd cd--next', role: 'timer' });
   const nextLabel = el('p', { class: 'next-card__label', text: '—' });
   const nowLabel = el('p', { class: 'next-card__now' });
   const nextCard = el('div', { class: 'card next-card' }, [
     nowLabel,
-    el('p', { class: 'next-card__eyebrow', text: 'Next milestone' }),
+    el('p', { class: 'next-card__eyebrow', text: 'Next session' }),
     nextLabel,
     nextCd,
   ]);
@@ -237,21 +285,21 @@ export function initAgenda() {
   function tick() {
     const t = now();
 
-    if (deadline) {
-      paintCountdown(deadlineCd, deadline.startMs - t, 'Deadline passed');
+    if (!Number.isNaN(deadlineMs)) {
+      paintCountdown(deadlineCd, deadlineMs - t, 'Deadline passed');
     } else if (deadlineCd.dataset.state !== 'none') {
       deadlineCd.dataset.state = 'none';
       deadlineCd.replaceChildren(el('span', { class: 'cd__expired', text: 'Not set' }));
     }
 
     const current = currentEntry(t);
-    const next = nextMilestone(t);
+    const next = nextUp(t);
 
-    const nowText = current ? `In session: ${current.label}` : 'No session in progress';
+    const nowText = current ? `In session: ${current.name}` : 'No session in progress';
     if (nowLabel.textContent !== nowText) nowLabel.textContent = nowText;
     nowLabel.className = `next-card__now${current ? ' next-card__now--live' : ''}`;
 
-    const label = next ? next.label : 'No milestones remaining';
+    const label = next ? next.name : 'No sessions remaining';
     if (nextLabel.textContent !== label) nextLabel.textContent = label;
 
     if (next) {

@@ -3,8 +3,8 @@
 // >=900px and stacked cards below. Both are always in the DOM and CSS picks one,
 // which keeps the markup semantic at every width without a resize listener.
 
-import { roster } from '../../data/roster.js?v=4';
-import { el, mountSection, highlight } from '../modules/render.js?v=4';
+import { roster } from '../../data/roster.js?v=5';
+import { el, mountSection, highlight } from '../modules/render.js?v=5';
 
 const BLANK = '—';
 
