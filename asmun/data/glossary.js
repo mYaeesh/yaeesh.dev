@@ -11,9 +11,13 @@
 
 /**
  * @typedef {Object} GlossaryTerm
- * @property {string} term
- * @property {string} definition - one or two sentences, plain language
- * @property {string} [note]     - longer practical note: when to use it, common mistakes
+ * @property {string}   term
+ * @property {string}   definition - one or two sentences, plain language
+ * @property {string}   [note]     - longer practical note: when to use it, common mistakes
+ * @property {string[]} [aliases]  - other spellings that mean this same entry, e.g. the
+ *   acronym people actually say out loud. js/modules/tooltips.js links these to the
+ *   definition above, so an alias never gets a second copy of the text. Add one only
+ *   when it is unambiguous in committee prose.
  */
 
 /** @type {GlossaryTerm[]} */
@@ -41,6 +45,7 @@ export const glossary = [
   },
   {
     term: 'Point of information',
+    aliases: ['POI'],
     definition:
       'A question put to a delegate who has just finished speaking, asked through the chair.',
     note:

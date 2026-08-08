@@ -5,10 +5,11 @@
 import { initThemeToggle } from './modules/theme.js?v=5';
 import { initActiveNav } from './modules/nav.js?v=5';
 import { initSearch } from './modules/search.js?v=5';
+import { initTooltips } from './modules/tooltips.js?v=6';
 
 import { initAgenda } from './sections/agenda.js?v=5';
 import { initBlocs } from './sections/blocs.js?v=5';
-import { initGlossary } from './sections/glossary.js?v=5';
+import { initGlossary } from './sections/glossary.js?v=6';
 import { initFacts } from './sections/facts.js?v=5';
 import { initQuestions } from './sections/questions.js?v=5';
 import { initAllies } from './sections/allies.js?v=5';
@@ -23,6 +24,10 @@ initFacts();
 initQuestions();
 initAllies();
 initRoster();
+
+// After every section has rendered: the glossary pass reads the DOM those
+// sections just produced, and re-runs itself when any of them re-renders.
+initTooltips();
 
 initSearch();
 
