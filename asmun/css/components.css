@@ -554,3 +554,238 @@
     transition: none;
   }
 }
+/* =======================================================================
+   ASMUN — correction-phase additions
+   APPEND to css/components.css. Nothing here overrides existing rules;
+   every selector is new. Uses only tokens already defined in tokens.css
+   (--c-red, --c-brass, --surface, --border, --fg-muted, --space-*).
+   ======================================================================= */
+
+/* --- Status badges ----------------------------------------------------- */
+.badge--withdrawn,
+.badge--unconfirmed,
+.badge--unresolved,
+.badge--placeholder,
+.badge--estimated {
+  font-weight: 700;
+  letter-spacing: .04em;
+  white-space: nowrap;
+}
+
+.badge--withdrawn {
+  background: var(--surface);
+  color: var(--fg-muted);
+  border: 1px solid var(--border);
+  text-decoration: line-through;
+}
+
+.badge--unconfirmed,
+.badge--placeholder {
+  background: transparent;
+  color: var(--c-brass);
+  border: 1px dashed var(--c-brass);
+}
+
+.badge--unresolved,
+.badge--estimated {
+  background: var(--c-red);
+  color: #fff;
+  border: 1px solid var(--c-red);
+}
+
+/* --- Roster status treatments ------------------------------------------
+   Three visually DISTINCT states, readable at a glance without reading text:
+     withdrawn   -> faded + struck through
+     unconfirmed -> dashed brass left edge
+     unresolved  -> solid red left edge
+   Left-edge colour is doubled with a badge so this survives greyscale.       */
+
+.roster-row--withdrawn,
+.roster-card--withdrawn { opacity: .55; }
+
+.roster-row--withdrawn .roster-country > span:not(.badge),
+.roster-card--withdrawn .roster-card__name { text-decoration: line-through; }
+
+.roster-row--unconfirmed td:first-child,
+.roster-card--unconfirmed { border-left: 4px dashed var(--c-brass); }
+
+.roster-row--unresolved td:first-child,
+.roster-card--unresolved { border-left: 4px solid var(--c-red); }
+
+/* The conflict note. Red, small, but never truncated — it has to be readable. */
+.roster-note {
+  color: var(--c-red);
+  font-size: .85rem;
+  line-height: 1.45;
+  margin: .35rem 0 0;
+  max-width: 68ch;
+}
+
+.roster-row--note td {
+  padding-top: 0;
+  border-top: 0;
+}
+
+/* --- Ally: unscored ----------------------------------------------------
+   A null score must never look like a low score. The track keeps its height
+   (so 375px row rhythm holds) but is hollow and hatched, and the number is
+   replaced by an explicit UNSCORED chip.                                     */
+
+.ally--unscored { opacity: .72; }
+
+/* Doubled class (.ally__track.ally__track--empty) is deliberate. sections.css
+   loads AFTER components.css and sets `.ally__track { background: var(--bg);
+   border: 1px solid var(--border) }` at the same specificity, so a lone
+   .ally__track--empty loses: the `background` shorthand resets background-image
+   to none and `solid` beats `dashed`. The track then renders identically to a
+   scored one — a 0-width fill reading as the worst score, which is the exact
+   misreading this rule exists to prevent. */
+.ally__track.ally__track--empty {
+  background-color: transparent;
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--border) 0 6px,
+    transparent 6px 12px
+  );
+  border: 1px dashed var(--border);
+}
+
+.ally__score-none {
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  color: var(--c-brass);
+  border: 1px dashed var(--c-brass);
+  border-radius: 999px;
+  padding: .12rem .45rem;
+  white-space: nowrap;
+}
+
+/* --- Ally: collapsed placeholder group ---------------------------------
+   39 unscored rows would bury the 9 real ones on a phone. They live in a
+   <details> instead. 44px min tap target for one-handed use.                */
+
+.ally-placeholders {
+  margin-top: var(--space-4, 1.5rem);
+  border-top: 1px dashed var(--border);
+  padding-top: var(--space-3, 1rem);
+}
+
+.ally-placeholders__summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  flex-wrap: wrap;
+  color: var(--fg-muted);
+  font-size: .9rem;
+  list-style-position: inside;
+}
+
+.ally-placeholders__summary:focus-visible {
+  outline: 2px solid var(--c-brass);
+  outline-offset: 2px;
+}
+
+.ally-placeholders[open] .ally-placeholders__summary {
+  margin-bottom: var(--space-3, 1rem);
+}
+
+/* --- Agenda: estimated times -------------------------------------------- */
+.agenda-row--estimated .agenda-row__clock { font-style: italic; }
+
+.agenda-row__timing-note {
+  color: var(--c-red);
+  font-size: .8rem;
+  line-height: 1.45;
+  margin: .35rem 0 0;
+  max-width: 68ch;
+}
+
+.next-card__estimate {
+  color: var(--c-red);
+  font-size: .78rem;
+  line-height: 1.4;
+  margin: .35rem 0 0;
+}
+.next-card__estimate[hidden] { display: none; }
+
+/* --- Placeholder content in blocs / questions ---------------------------
+   Data-level placeholders are prefixed "⚠ PLACEHOLDER" in the strings
+   themselves, so they are visible with no renderer change. These optional
+   rules give them a dashed edge too if the section markup exposes the flag. */
+
+[data-placeholder='true'],
+.bloc--placeholder,
+.question--placeholder {
+  border-left: 4px dashed var(--c-brass);
+  opacity: .85;
+}
+
+/* --- Dark mode -----------------------------------------------------------
+   The hatched track uses --border, which is low-contrast on a dark surface
+   and can disappear. Lift it, and lighten the red so it stays legible.      */
+
+[data-theme='dark'] .ally__track.ally__track--empty {
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--fg-muted) 0 6px,
+    transparent 6px 12px
+  );
+  border-color: var(--fg-muted);
+  opacity: .5;
+}
+
+[data-theme='dark'] .roster-note,
+[data-theme='dark'] .agenda-row__timing-note,
+[data-theme='dark'] .next-card__estimate { color: #F08A8A; }
+
+[data-theme='dark'] .badge--unresolved,
+[data-theme='dark'] .badge--estimated {
+  background: #C0392B;
+  border-color: #C0392B;
+  color: #fff;
+}
+
+/* Same lifts for SYSTEM dark. tokens.css switches palette on both
+   :root[data-theme="dark"] and @media (prefers-color-scheme: dark) with
+   :root:not([data-theme="light"]) — no attribute is set until the toggle is
+   pressed, so an attribute-only rule misses every untoggled dark device and
+   the hatched track disappears into the surface. Mirrors the tokens.css pattern. */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .ally__track.ally__track--empty {
+    background-image: repeating-linear-gradient(
+      45deg,
+      var(--fg-muted) 0 6px,
+      transparent 6px 12px
+    );
+    border-color: var(--fg-muted);
+    opacity: .5;
+  }
+
+  :root:not([data-theme='light']) .roster-note,
+  :root:not([data-theme='light']) .agenda-row__timing-note,
+  :root:not([data-theme='light']) .next-card__estimate { color: #F08A8A; }
+
+  :root:not([data-theme='light']) .badge--unresolved,
+  :root:not([data-theme='light']) .badge--estimated {
+    background: #C0392B;
+    border-color: #C0392B;
+    color: #fff;
+  }
+}
+
+/* --- Print ---------------------------------------------------------------
+   On paper, expand the placeholder group and drop opacity tricks — a printed
+   sheet is a fallback and must show everything.                             */
+
+@media print {
+  .ally-placeholders > *:not(summary) { display: block !important; }
+  .ally--unscored,
+  .roster-row--withdrawn,
+  .roster-card--withdrawn { opacity: 1; }
+  .badge--unresolved,
+  .badge--estimated { background: #000; color: #fff; }
+}

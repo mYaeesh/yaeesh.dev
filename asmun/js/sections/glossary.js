@@ -2,8 +2,8 @@
 // Alphabetical, scannable definition list. Sorting happens here, not in the data
 // file, so terms can be appended in any order.
 
-import { glossary } from '../../data/glossary.js?v=6';
-import { el, mountSection, highlight } from '../modules/render.js?v=5';
+import { glossary } from '../../data/glossary.js?v=8';
+import { el, mountSection, highlight } from '../modules/render.js?v=8';
 
 // localeCompare so accented terms sort where a reader expects them to.
 const sorted = [...glossary].sort((a, b) => a.term.localeCompare(b.term, 'en'));

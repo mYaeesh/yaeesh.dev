@@ -1,5 +1,5 @@
 // ASMUN — sections/agenda.js
-// Live agenda: the resolution deadline as a large prominent countdown, a countdown
+// Live agenda: the confirmed committee-open time as a large prominent countdown, a countdown
 // to the next session, and the session list with the current session highlighted.
 //
 // One setInterval drives every clock on the page. It ticks each second, but only
@@ -12,12 +12,22 @@
 // and it stays correct no matter where the delegate's laptop thinks it is. Only the
 // countdowns convert to real instants, using date + time + timezone.
 //
+// CORRECTION PHASE — ESTIMATED TIMES.
+// Only 14:30 (committee open) and the two 60-minute caucus DURATIONS are confirmed.
+// Every other time is a flagged estimate. Rows carrying `timing` render with a `~` prefix
+// on the clock, a red badge, and the reason inline — so an estimate can never be misread
+// as an exact time called by the dais.
+//
+// There is NO fixed draft-resolution deadline in this committee's procedure. The prominent
+// countdown card therefore targets committee open. (The `resolutionDeadline` key in
+// data/schedule.js is retained as a legacy name; its label/note say what it actually is.)
+//
 // CLOCK OVERRIDE: ?now=<ISO timestamp> pretends it is that moment, so the mid-session
 // states can be previewed without waiting for the conference. Documented in
 // data/schedule.js. Without it, the real clock is used.
 
-import { schedule } from '../../data/schedule.js?v=5';
-import { el, mountSection, highlight, groupBy } from '../modules/render.js?v=5';
+import { schedule } from '../../data/schedule.js?v=8';
+import { el, mountSection, highlight, groupBy } from '../modules/render.js?v=8';
 
 const SECOND = 1000;
 
@@ -26,6 +36,11 @@ const MONTHS = [
   'July', 'August', 'September', 'October', 'November', 'December',
 ];
 
+const TIMING_BADGE = {
+  estimated: { text: 'TIME ESTIMATED', fallback: 'Start and duration are estimates, not confirmed.' },
+  'estimated-start': { text: 'START ESTIMATED', fallback: 'Duration confirmed; start time is an estimate.' },
+};
+
 /** "2026-08-10" -> "10 August 2026". Built from the string parts, so no timezone can shift it. */
 function longDate(iso) {
   const [year, month, day] = String(iso ?? '').split('-').map(Number);
@@ -33,7 +48,7 @@ function longDate(iso) {
   return `${day} ${MONTHS[month - 1] ?? month} ${year}`;
 }
 
-/** The one heading every row groups under, e.g. "Day 2 — Monday 10 August 2026". */
+/** The one heading every row groups under, e.g. "Conference Day — Monday 10 August 2026". */
 const dayHeading = [
   schedule.conferenceDay,
   [schedule.dayOfWeek, longDate(schedule.date)].filter(Boolean).join(' '),
@@ -58,16 +73,18 @@ const entries = (schedule.sessions ?? []).map((session) => ({
 
 const invalid = entries.filter((e) => Number.isNaN(e.startMs) || Number.isNaN(e.endMs));
 if (invalid.length) {
-  console.warn(
-    '[agenda] unparseable times in data/schedule.js:',
-    invalid.map((e) => e.id)
-  );
+  console.warn('[agenda] unparseable times in data/schedule.js:', invalid.map((e) => e.id));
 }
 
 // --- clock -----------------------------------------------------------------
 let clockOffset = 0;
 try {
-  const override = new URLSearchParams(window.location.search).get('now');
+  // URLSearchParams decodes "+" as a space, so the documented test URL
+  // ?now=2026-08-10T15:30:00+05:00 arrives as "...00 05:00" and Date.parse rejects
+  // it. Restore the offset sign here rather than making every caller percent-encode
+  // it — "Z" and offset-less values pass through untouched.
+  const raw = new URLSearchParams(window.location.search).get('now');
+  const override = raw ? raw.replace(/ (\d{2}:?\d{2})$/, '+$1') : raw;
   if (override) {
     const parsed = Date.parse(override);
     if (Number.isNaN(parsed)) {
@@ -84,11 +101,15 @@ try {
 const now = () => Date.now() + clockOffset;
 
 // --- formatting ------------------------------------------------------------
-/** The conference wall clock, straight from the data. */
+/**
+ * The conference wall clock, straight from the data.
+ * Estimated rows are prefixed with "~" so the number is never mistaken for an exact
+ * time the dais called out.
+ */
 function clockRange(entry) {
   if (!entry.start) return 'time not set';
-  if (!entry.end || entry.end === entry.start) return entry.start;
-  return `${entry.start} – ${entry.end}`;
+  const base = !entry.end || entry.end === entry.start ? entry.start : `${entry.start} – ${entry.end}`;
+  return entry.timing ? `~${base}` : base;
 }
 
 /** Split a duration into padded parts. Days only appear when there are any. */
@@ -144,31 +165,28 @@ function paintCountdown(container, ms, expiredText) {
 }
 
 // --- state ------------------------------------------------------------------
-// The deadline row in the session list is the countdown target. If nobody marked one
-// type: 'deadline', fall back to resolutionDeadline.time so the card still counts.
+// The prominent card targets committee open, taken from resolutionDeadline.time.
+// No row is type:'deadline' any more — this committee has no fixed submission cutoff —
+// so this falls through to the schedule-level value by design.
 const deadlineEntry =
   entries.filter((e) => e.isDeadline).sort((a, b) => a.startMs - b.startMs)[0] ?? null;
 
-const deadlineMs = deadlineEntry
-  ? deadlineEntry.startMs
-  : instant(schedule.resolutionDeadline?.time);
+const deadlineMs = deadlineEntry ? deadlineEntry.startMs : instant(schedule.resolutionDeadline?.time);
 
 const deadlineWhen = deadlineEntry
   ? `${dayHeading} · ${clockRange(deadlineEntry)}`
   : schedule.resolutionDeadline?.time
-    ? `${dayHeading} · ${schedule.resolutionDeadline.time}`
-    : 'No deadline set in schedule.js.';
+  ? `${dayHeading} · ${schedule.resolutionDeadline.time} (UTC${schedule.timezone}) — CONFIRMED`
+  : 'No anchor time set in schedule.js.';
 
 function currentEntry(t) {
   return entries.find((e) => t >= e.startMs && t < e.endMs) ?? null;
 }
 
-/** Next session to start. The deadline marker is excluded — it has its own big card. */
+/** Next session to start. Any deadline marker is excluded — it has its own big card. */
 function nextUp(t) {
   return (
-    entries
-      .filter((e) => !e.isDeadline && e.startMs > t)
-      .sort((a, b) => a.startMs - b.startMs)[0] ?? null
+    entries.filter((e) => !e.isDeadline && e.startMs > t).sort((a, b) => a.startMs - b.startMs)[0] ?? null
   );
 }
 
@@ -186,7 +204,14 @@ function agendaRow(entry, ctx) {
   const q = ctx.query;
 
   const row = el('article', {
-    class: `agenda-row agenda-row--${status}${entry.isDeadline ? ' agenda-row--deadline' : ''}`,
+    class: [
+      'agenda-row',
+      `agenda-row--${status}`,
+      entry.isDeadline ? 'agenda-row--deadline' : '',
+      entry.timing ? 'agenda-row--estimated' : '',
+    ]
+      .filter(Boolean)
+      .join(' '),
     dataset: { entryId: entry.id },
   });
 
@@ -200,11 +225,27 @@ function agendaRow(entry, ctx) {
 
   const body = el('div', { class: 'agenda-row__body' });
   body.append(el('h4', { class: 'agenda-row__label' }, [highlight(entry.name, q)]));
+
   if (entry.isDeadline) {
     body.append(el('span', { class: 'badge badge--danger', text: 'DEADLINE' }));
   } else if (entry.type) {
     body.append(el('span', { class: 'badge badge--type', text: entry.type.toUpperCase() }));
   }
+
+  const timingBadge = TIMING_BADGE[entry.timing];
+  if (timingBadge) {
+    body.append(
+      el('span', {
+        class: 'badge badge--estimated',
+        text: timingBadge.text,
+        title: entry.timingNote || timingBadge.fallback,
+      })
+    );
+  }
+  if (entry.timingNote) {
+    body.append(el('p', { class: 'agenda-row__timing-note', text: entry.timingNote }));
+  }
+
   if (entry.whatsHappening) {
     body.append(el('p', { class: 'agenda-row__note' }, [highlight(entry.whatsHappening, q)]));
   }
@@ -218,8 +259,10 @@ export function initAgenda() {
     id: 'agenda',
     title: 'Agenda',
     blurb:
-      `${dayHeading}. Times are a template built from the standard committee structure — ` +
-      'replace them in data/schedule.js once the real ASMUN schedule lands.',
+      `${dayHeading}. Committee opens ${schedule.resolutionDeadline?.time ?? '14:30'} Maldives time ` +
+      `(UTC${schedule.timezone}) — CONFIRMED. Moderated and unmoderated caucuses are 60 min each — ` +
+      'CONFIRMED. Every other time on this page is an ESTIMATE, marked with ~ and a red badge. ' +
+      'Correct them in data/schedule.js as the dais posts them.',
     items: entries,
     itemView: agendaRow,
     renderList: (container, items, ctx) => {
@@ -233,12 +276,12 @@ export function initAgenda() {
     controls: {
       search: true,
       searchLabel: 'Filter agenda',
-      searchPlaceholder: 'caucus, crisis, deadline…',
+      searchPlaceholder: 'caucus, roll call, adjourn…',
     },
     searchIndex: (entry) => ({
       title: entry.name,
       snippet: `${entry.session} · ${clockRange(entry)}`,
-      keywords: `${entry.type ?? ''} ${entry.whatsHappening ?? ''}`,
+      keywords: `${entry.type ?? ''} ${entry.whatsHappening ?? ''} ${entry.timing ? 'estimated' : 'confirmed'}`,
     }),
   });
 
@@ -248,20 +291,18 @@ export function initAgenda() {
   const host = document.getElementById('agenda');
   const dash = el('div', { class: 'agenda-dash' });
 
-  // Prominent: resolution deadline.
+  // Prominent: committee open (the only confirmed instant in the schedule).
   const deadlineCd = el('div', { class: 'cd cd--deadline', role: 'timer' });
   const deadlineCard = el('div', { class: 'card card--raised deadline-card' }, [
     el('p', {
       class: 'deadline-card__eyebrow',
-      text: schedule.resolutionDeadline?.label ?? 'Resolution deadline',
+      text: schedule.resolutionDeadline?.label ?? 'Committee opens',
     }),
     deadlineCd,
     el('p', { class: 'deadline-card__when', text: deadlineWhen }),
   ]);
   if (schedule.resolutionDeadline?.note) {
-    deadlineCard.append(
-      el('p', { class: 'deadline-card__note', text: schedule.resolutionDeadline.note })
-    );
+    deadlineCard.append(el('p', { class: 'deadline-card__note', text: schedule.resolutionDeadline.note }));
   }
   dash.append(deadlineCard);
 
@@ -269,11 +310,13 @@ export function initAgenda() {
   const nextCd = el('div', { class: 'cd cd--next', role: 'timer' });
   const nextLabel = el('p', { class: 'next-card__label', text: '—' });
   const nowLabel = el('p', { class: 'next-card__now' });
+  const nextNote = el('p', { class: 'next-card__estimate' });
   const nextCard = el('div', { class: 'card next-card' }, [
     nowLabel,
     el('p', { class: 'next-card__eyebrow', text: 'Next session' }),
     nextLabel,
     nextCd,
+    nextNote,
   ]);
   dash.append(nextCard);
 
@@ -286,7 +329,7 @@ export function initAgenda() {
     const t = now();
 
     if (!Number.isNaN(deadlineMs)) {
-      paintCountdown(deadlineCd, deadlineMs - t, 'Deadline passed');
+      paintCountdown(deadlineCd, deadlineMs - t, 'Committee has opened');
     } else if (deadlineCd.dataset.state !== 'none') {
       deadlineCd.dataset.state = 'none';
       deadlineCd.replaceChildren(el('span', { class: 'cd__expired', text: 'Not set' }));
@@ -301,6 +344,11 @@ export function initAgenda() {
 
     const label = next ? next.name : 'No sessions remaining';
     if (nextLabel.textContent !== label) nextLabel.textContent = label;
+
+    // Never let the secondary countdown imply precision it doesn't have.
+    const estText = next && next.timing ? '⚠ Estimated start — not a confirmed time' : '';
+    if (nextNote.textContent !== estText) nextNote.textContent = estText;
+    nextNote.hidden = !estText;
 
     if (next) {
       paintCountdown(nextCd, next.startMs - t, 'Started');
