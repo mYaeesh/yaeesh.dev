@@ -6,6 +6,7 @@ import { initThemeToggle } from './modules/theme.js?v=5';
 import { initActiveNav } from './modules/nav.js?v=5';
 import { initSearch } from './modules/search.js?v=5';
 import { initTooltips } from './modules/tooltips.js?v=6';
+import { initWelcome } from './modules/welcome.js?v=1';
 
 import { initAgenda } from './sections/agenda.js?v=5';
 import { initBlocs } from './sections/blocs.js?v=5';
@@ -34,3 +35,4 @@ initSearch();
 // Nav last: it observes .panel-section elements, which only have their final
 // height once the sections above have rendered their content.
 initActiveNav();
+initWelcome();

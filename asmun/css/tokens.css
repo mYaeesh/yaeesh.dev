@@ -121,6 +121,7 @@
   --z-tabbar: 100;
   --z-skiplink: 200;
   --z-tooltip: 300;   /* above the sticky header, or it opens behind it near the top */
+  --z-welcome: 500;   /* the entry interstitial covers everything, tooltips included */
 }
 
 /* ===========================================================================
