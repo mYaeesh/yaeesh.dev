@@ -456,3 +456,101 @@
   border: 1px solid var(--border-hi);
   color: var(--fg-muted);
 }
+
+/* ---------------------------------------------------------------------
+   Glossary tooltips
+   Injected at runtime by js/modules/tooltips.js. The trigger is an inline
+   <span> rather than a <button> on purpose: a button cannot break across
+   lines, so a two-word term like "moderated caucus" landing at the end of
+   a line would refuse to wrap and push a ragged hole into the paragraph.
+
+   There is deliberately NO :hover rule that shows the bubble. Visibility is
+   driven entirely from JS so that touch gets tap-to-toggle instead of iOS's
+   sticky synthetic hover.
+--------------------------------------------------------------------- */
+.gloss-term {
+  /* Dotted, not solid — a solid underline in accent colour reads as a link. */
+  border-bottom: 1px dotted var(--accent);
+  cursor: help;
+  transition: background-color 120ms ease-out, border-color 120ms ease-out;
+}
+
+.gloss-term:hover,
+.gloss-term.is-active {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  border-bottom-color: var(--accent-ink);
+}
+
+.gloss-tip {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: var(--z-tooltip);
+  max-width: min(22rem, calc(100vw - 2rem));
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border-hi);
+  border-radius: var(--radius-md);
+  background: var(--surface-raised);
+  color: var(--fg);
+  box-shadow: var(--shadow-md);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  text-align: left;
+
+  /* Never intercepts the pointer: a bubble that sits under the cursor would
+     fire pointerleave on the trigger and flicker itself shut. */
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 120ms ease-out;
+}
+
+.gloss-tip.is-open {
+  opacity: 1;
+}
+
+.gloss-tip__term {
+  margin: 0 0 var(--space-1);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+}
+
+.gloss-tip__def {
+  margin: 0;
+}
+
+/* Arrow. --gloss-arrow-x is written by tooltips.js and tracks the trigger's
+   centre even after the box has been clamped away from the viewport edge. */
+.gloss-tip::after {
+  content: "";
+  position: absolute;
+  left: var(--gloss-arrow-x, 50%);
+  width: 9px;
+  height: 9px;
+  margin-left: -5px;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-hi);
+  transform: rotate(45deg);
+}
+
+.gloss-tip[data-placement="top"]::after {
+  bottom: -5px;
+  border-top: 0;
+  border-left: 0;
+}
+
+.gloss-tip[data-placement="bottom"]::after {
+  top: -5px;
+  border-bottom: 0;
+  border-right: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gloss-term,
+  .gloss-tip {
+    transition: none;
+  }
+}

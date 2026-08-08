@@ -7,8 +7,16 @@
   .side-nav,
   .tab-bar,
   .skip-link,
-  .theme-toggle {
+  .theme-toggle,
+  .gloss-tip {
     display: none !important;
+  }
+
+  /* Glossary terms stay as ordinary words on paper — the dotted rule reads as
+     an artefact once nothing can be hovered. */
+  .gloss-term {
+    border-bottom: 0 !important;
+    background: none !important;
   }
 
   html,

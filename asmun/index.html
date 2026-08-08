@@ -18,12 +18,13 @@
       } catch (err) {}
     })();
   </script>
-  <link rel="stylesheet" href="css/tokens.css?v=4">
-  <link rel="stylesheet" href="css/base.css?v=3">
-  <link rel="stylesheet" href="css/components.css?v=3">
+  <link rel="stylesheet" href="css/tokens.css?v=7">
+  <link rel="stylesheet" href="css/base.css?v=5">
+  <link rel="stylesheet" href="css/components.css?v=6">
+  <link rel="stylesheet" href="css/sections.css?v=5">
   <link rel="stylesheet" href="css/welcome.css?v=1">
-  <link rel="stylesheet" href="css/print.css?v=3" media="print">
-  <script type="module" src="js/main.js?v=4"></script>
+  <link rel="stylesheet" href="css/print.css?v=6" media="print">
+  <script type="module" src="js/main.js?v=7"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -46,6 +47,22 @@
       <a class="brand" href="#top">
         ASMUN <span class="brand__sub">Canada</span>
       </a>
+
+      <div class="search-field">
+        <label class="visually-hidden" for="global-search">Search all sections</label>
+        <input
+          id="global-search"
+          class="search-field__input"
+          type="search"
+          placeholder="Search everything…"
+          autocomplete="off"
+          role="combobox"
+          aria-expanded="false"
+          aria-controls="search-results"
+          aria-autocomplete="list">
+        <span class="search-field__hint" aria-hidden="true">/</span>
+      </div>
+
       <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle dark mode" aria-pressed="false">
         <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true">
           <circle cx="12" cy="12" r="4.5"></circle>
@@ -58,9 +75,17 @@
     </div>
   </header>
 
+  <div id="search-overlay" class="search-overlay" hidden role="dialog" aria-modal="true" aria-label="Search results">
+    <div class="search-panel">
+      <p id="search-status" class="search-panel__status" role="status" aria-live="polite"></p>
+      <ul id="search-results" class="search-results" role="listbox" aria-label="Search results"></ul>
+    </div>
+  </div>
+
   <div class="shell">
     <nav class="side-nav" aria-label="Section navigation">
       <ul class="side-nav__list">
+        <li><a class="side-nav__link" href="#agenda">Agenda</a></li>
         <li><a class="side-nav__link" href="#blocs">Blocs</a></li>
         <li><a class="side-nav__link" href="#glossary">Glossary</a></li>
         <li><a class="side-nav__link" href="#facts">Facts</a></li>
@@ -76,60 +101,27 @@
     </nav>
 
     <main id="main" class="content">
-      <section id="blocs" class="panel-section">
-        <h2>Blocs</h2>
-        <div class="card">
-          <p>Regional and political groupings, and where Canada tends to line up with each. Not yet populated.</p>
-          <div class="field"><span class="field__label">Status</span> <span class="field__value">Placeholder</span></div>
+      <noscript>
+        <div class="alert">
+          <p>This page builds its content with JavaScript. With JavaScript disabled the
+          sections below stay empty — the underlying data lives in readable files under
+          <code>asmun/data/</code>.</p>
         </div>
-      </section>
+      </noscript>
 
-      <section id="glossary" class="panel-section">
-        <h2>Glossary</h2>
-        <div class="card">
-          <p>Committee and procedural terms, defined plainly. Not yet populated.</p>
-          <div class="field"><span class="field__label">Status</span> <span class="field__value">Placeholder</span></div>
-        </div>
-      </section>
+      <!-- Sections below are mount points. Their content is rendered by
+           js/sections/*.js through the generic renderer in js/modules/render.js.
+           Do not hand-write content here; edit the matching file in asmun/data/. -->
 
-      <section id="facts" class="panel-section">
-        <h2>Facts</h2>
-        <div class="card">
-          <p>Quick-reference figures on Canada's positions and record. Not yet populated.</p>
-          <div class="field-row">
-            <div class="field"><span class="field__label">Status</span> <span class="field__value">Placeholder</span></div>
-            <div class="field"><span class="field__label">Entries</span> <span class="field__value field__value--numeric">0</span></div>
-          </div>
-        </div>
-      </section>
+      <section id="agenda" class="panel-section"></section>
+      <section id="blocs" class="panel-section"></section>
+      <section id="glossary" class="panel-section"></section>
+      <section id="facts" class="panel-section"></section>
+      <section id="questions" class="panel-section"></section>
+      <section id="allies" class="panel-section"></section>
+      <section id="roster" class="panel-section"></section>
 
-      <section id="questions" class="panel-section">
-        <h2>Questions</h2>
-        <div class="card">
-          <p>Anticipated questions from the floor, with response angles. Not yet populated.</p>
-          <div class="field"><span class="field__label">Status</span> <span class="field__value">Placeholder</span></div>
-        </div>
-      </section>
-
-      <section id="allies" class="panel-section">
-        <h2>Allies</h2>
-        <div class="card">
-          <p>Likely co-sponsors and delegations to coordinate with. Not yet populated.</p>
-          <div class="field"><span class="field__label">Status</span> <span class="field__value">Placeholder</span></div>
-        </div>
-      </section>
-
-      <section id="roster" class="panel-section">
-        <h2>Roster</h2>
-        <div class="card">
-          <p>Full committee roster of member states. Not yet populated.</p>
-          <div class="field-row">
-            <div class="field"><span class="field__label">Status</span> <span class="field__value">Placeholder</span></div>
-            <div class="field"><span class="field__label">Members</span> <span class="field__value field__value--numeric">0</span></div>
-          </div>
-        </div>
-      </section>
-
+      <!-- Not yet built — Phase 3. -->
       <section id="speeches" class="panel-section">
         <h2>Speeches</h2>
         <div class="card">
@@ -174,6 +166,7 @@
 
   <nav class="tab-bar" aria-label="Section navigation">
     <ul class="tab-bar__list">
+      <li class="tab-bar__item"><a class="tab-bar__link" href="#agenda">Agenda</a></li>
       <li class="tab-bar__item"><a class="tab-bar__link" href="#blocs">Blocs</a></li>
       <li class="tab-bar__item"><a class="tab-bar__link" href="#glossary">Glossary</a></li>
       <li class="tab-bar__item"><a class="tab-bar__link" href="#facts">Facts</a></li>
