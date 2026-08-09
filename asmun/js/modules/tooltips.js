@@ -22,7 +22,7 @@
 // mutation records it generated itself, so an injection can never trigger another
 // injection. Without both, the observer feeds itself and the tab locks up.
 
-import { glossary } from '../../data/glossary.js?v=6';
+import { glossary } from '../../data/glossary.js?v=8';
 
 const TIP_ID = 'asmun-gloss-tip';
 const GAP = 10; // px between trigger and bubble

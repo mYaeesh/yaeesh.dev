@@ -1,126 +1,134 @@
 // schedule.js
 // Canada — Strengthening the Protection of Refugees and Displaced Civilians Through International Cooperation
-// ASMUN, Day 2 — Monday 10 August 2026
+// ASMUN — Monday 10 August 2026, Maldives time (UTC+5)
 //
-// NOTE: These are TEMPLATE times built from a standard single-day MUN committee structure
-// (Starting -> Formal -> Informal -> Crisis -> Solution-building -> Ending), per your Day 2
-// outline. You confirmed you don't have the actual ASMUN times yet — swap the "time" fields
-// below for the real schedule as soon as you have it. Everything else (structure, what happens
-// in each block, and the resolution deadline framing) should transfer directly.
+// ⚠️ ONLY THREE TIMINGS ARE CONFIRMED:
+//    1. Committee opens 14:30 MVT.
+//    2. Moderated caucus runs 60 minutes (Canada motions; 90 SECONDS speaking time — 90, not 120).
+//    3. Unmoderated caucus runs 60 minutes (Uganda motions).
+// Everything else below is an ESTIMATE. Roll call, agenda vote, break, and draft-resolution
+// durations were NOT supplied and have NOT been invented as fact — they are round guesses,
+// flagged `timing: 'estimated'`, purely so the countdown has something to anchor to.
+// Because durations compound, EVERY start time after 14:30 is also estimated.
+// Update `start`/`end` live on the day as the dais posts real times.
 //
-// TIMEZONE: the times below are wall-clock ("HH:MM") with no offset baked in. `timezone` supplies
-// the offset the countdown uses to turn them into real instants. It is set to +05:00 (Maldives) —
-// change it here, in one place, if the conference runs in another zone.
+// NO FIXED RESOLUTION DEADLINE EXISTS in this committee's procedure. Draft resolutions are
+// numbered 1.1, 1.2… as submitted, presented in order, voted in order; the winner passes by simple
+// majority, the rest are discarded. The prominent countdown therefore targets COMMITTEE OPEN.
 //
-// TESTING THE LIVE STATES: append ?now=<ISO timestamp> to the page URL to pretend it is that
-// moment — e.g. ?now=2026-08-10T13:30:00+05:00 — so the mid-session states can be previewed
-// without waiting for the conference. Without the parameter the real clock is used.
-//
-// Pure data — no imports, no DOM. Rendering lives in js/sections/agenda.js.
+// TESTING: append ?now=2026-08-10T15:30:00+05:00 to preview mid-session states.
 
 export const schedule = {
-  conferenceDay: "Day 2",
-  date: "2026-08-10",
-  dayOfWeek: "Monday",
-  timezone: "+05:00",
+  conferenceDay: 'Conference Day',
+  date: '2026-08-10',
+  dayOfWeek: 'Monday',
+  timezone: '+05:00',
+
+  // Drives the big countdown card in js/sections/agenda.js.
+  // NOTE: the key name is a legacy misnomer — this is no longer a resolution deadline.
+  // It is the ONLY confirmed instant in the whole file.
   resolutionDeadline: {
-    time: "16:00",
-    label: "DRAFT RESOLUTION SUBMISSION DEADLINE",
+    time: '14:30',
+    label: 'COMMITTEE OPENS — ROLL CALL',
     note:
-      "This is the hard cutoff the site's countdown widget should track. No new draft resolutions accepted to the dais after this time — only amendments to resolutions already on the floor. Build your working paper toward a sponsor-ready draft well before this, not at the wire."
+      'CONFIRMED: 14:30 Maldives time (UTC+5), Monday 10 August 2026. This is the only confirmed ' +
+      'timestamp in the schedule. There is NO fixed draft-resolution deadline in this committee — ' +
+      'resolutions are numbered as submitted and voted in submission order. Every session time ' +
+      'below this one is an estimate; correct them in data/schedule.js as the dais posts them.',
   },
+
   sessions: [
     {
-      id: "starting",
-      name: "Call to Order / Roll Call / Agenda Setting",
-      start: "09:00",
-      end: "09:20",
-      type: "starting",
+      id: 'opening-roll-call',
+      name: 'Opening Ceremony & Roll Call',
+      start: '14:30', end: '14:45',
+      type: 'starting',
+      timing: 'estimated',
+      timingNote: 'START CONFIRMED 14:30. END ESTIMATED — roll-call duration not confirmed. 15 min is a guess.',
       whatsHappening:
-        "Dais calls roll, confirms quorum, and the committee formally sets or reconfirms the agenda for Day 2. Canada should use roll call to gauge who's present/absent versus Day 1 — an absent Sovereignty or Host bloc member changes coalition math for the day."
+        'Opening ceremony, then roll call in official roster order. 48 active delegations. Sweden, ' +
+        'Denmark and Hungary are withdrawn and do not answer or vote. Thailand is unconfirmed — if ' +
+        "called, note it. Listen for whether \"Ash'ham\" is called for both Norway and Sudan; that " +
+        'conflict is still unresolved in data/roster.js.',
     },
     {
-      id: "formal-debate-1",
-      name: "Formal Debate — Moderated Caucus (Opening Positions)",
-      start: "09:20",
-      end: "10:45",
-      type: "formal debate",
+      id: 'agenda-vote',
+      name: 'Agenda Vote',
+      start: '14:45', end: '14:55',
+      type: 'starting',
+      timing: 'estimated',
+      timingNote: 'FULLY ESTIMATED — neither start nor duration confirmed. 10 min is a guess.',
       whatsHappening:
-        "Speakers' list and moderated caucus topics addressing the core agenda item. This is where Canada should deliver its opening framing: name the PSR cut honestly, introduce the GDP-scaled funding concept in broad strokes, and signal openness to Host Countries without yet revealing full mechanism details. Use POI questions from questions.js sparingly here — save the sharper ones for informal caucusing and bloc-splitting later in the day."
+        'PAKISTAN proposes the agenda: "Strengthening the Protection of Refugees and Displaced ' +
+        'Civilians Through International Cooperation." Passes by SIMPLE MAJORITY. Withdrawn ' +
+        'countries do not vote — the majority threshold is calculated on delegations present.',
     },
     {
-      id: "informal-debate-1",
-      name: "Informal Debate — Unmoderated Caucus (Bloc Formation)",
-      start: "10:45",
-      end: "12:00",
-      type: "informal debate",
+      id: 'moderated-caucus',
+      name: 'Moderated Caucus — 60 min, 90 sec speaking time',
+      start: '14:55', end: '15:55',
+      type: 'formal debate',
+      timing: 'estimated-start',
+      timingNote:
+        'DURATION CONFIRMED: 60 minutes. SPEAKING TIME CONFIRMED: 90 SECONDS (ninety — not 120, ' +
+        'regardless of any earlier note). START TIME ESTIMATED — it inherits the unconfirmed ' +
+        'roll-call and agenda-vote durations above.',
       whatsHappening:
-        "Unmoderated caucus for bloc and coalition building. Canada's priority window to: (1) lock in Western Nations alignment on language before Germany or the UK drift toward more cautious phrasing, (2) approach Colombia and Jordan directly with the funding mechanism's specifics, and (3) make first contact with UAE, Qatar, and Oman to test appetite for splitting from the Sovereignty bloc's harder line."
+        'CANADA OPENS THIS — you motion for a 60-minute moderated caucus with 90-second speaking ' +
+        'time. That is your motion to make; have it phrased and ready before the agenda vote closes. ' +
+        '90 seconds is roughly 210–230 words. Deliver the opening framing here: name the PSR cut ' +
+        'yourself, introduce the GDP-scaled funding concept in broad strokes.',
     },
     {
-      id: "lunch",
-      name: "Lunch Break",
-      start: "12:00",
-      end: "13:00",
-      type: "break",
+      id: 'break',
+      name: 'Break',
+      start: '15:55', end: '16:10',
+      type: 'break',
+      timing: 'estimated',
+      timingNote:
+        'FULLY ESTIMATED — a break is confirmed to occur here, but its length was NOT supplied. ' +
+        '15 min is a guess.',
       whatsHappening:
-        "No formal committee business. Informal lobbying continues in practice — treat as an extension of the unmoderated caucus for coalition-building purposes, just off the record."
+        'Confirmed to happen; length unknown. Informal lobbying continues off the record — treat as ' +
+        'bonus caucus time.',
     },
     {
-      id: "crisis",
-      name: "Crisis Simulation / Crisis Update",
-      start: "13:00",
-      end: "14:15",
-      type: "crisis",
+      id: 'unmoderated-caucus',
+      name: 'Unmoderated Caucus — 60 min',
+      start: '16:10', end: '17:10',
+      type: 'informal debate',
+      timing: 'estimated-start',
+      timingNote:
+        'DURATION CONFIRMED: 60 minutes. START ESTIMATED — inherits the unconfirmed break length above.',
       whatsHappening:
-        "Dais introduces a crisis update (e.g., a sudden displacement spike or funding shock) that pressure-tests whatever mechanism blocs have been drafting. Canada should treat this as a stress test of the GDP-scaled proposal's credibility — be ready to explain how the mechanism responds to a shock, not just steady-state hosting numbers, since that's exactly what a skeptical Host Country or Gulf state will ask about immediately after."
+        'UGANDA OPENS THIS — Uganda motions for a 60-minute unmoderated caucus, not you. Working ' +
+        'groups form ORGANICALLY here. There is no pre-assigned bloc structure: whatever is in ' +
+        'data/blocs.js is your personal read, not a script. This is the hour that decides which ' +
+        'draft resolution you are on. Phone down.',
     },
     {
-      id: "informal-debate-2",
-      name: "Informal Debate — Unmoderated Caucus (Working Paper Consolidation)",
-      start: "14:15",
-      end: "15:15",
-      type: "informal debate",
+      id: 'draft-resolutions',
+      name: 'Draft Resolutions — presentation & voting',
+      start: '17:10', end: '17:55',
+      type: 'presenting solution and finding solution',
+      timing: 'estimated',
+      timingNote: 'FULLY ESTIMATED — no duration supplied for presentation or voting. 45 min is a guess.',
       whatsHappening:
-        "Working papers get merged into sponsor-ready draft resolutions. This is the last real window to add co-sponsors before drafts lock in. Priority: get at least one Host Country (Colombia or Jordan) and one Sovereignty-bloc moderate (UAE, Qatar, or Oman) as visible co-sponsors or signatories, not just Western Nations — a Western-only sponsor list undercuts the resolution's credibility on arrival."
+        'Resolutions are numbered 1.1, 1.2, 1.3… in submission order, presented in that order, then ' +
+        'voted in that order. The first to pass by SIMPLE MAJORITY wins; all others are discarded. ' +
+        'Submission order therefore matters — being 1.1 means being voted on first.',
     },
     {
-      id: "presenting-solutions",
-      name: "Formal Debate — Presenting & Finding Solutions (Draft Resolution Introductions)",
-      start: "15:15",
-      end: "16:00",
-      type: "presenting solution and finding solution",
+      id: 'adjournment',
+      name: 'Adjournment',
+      start: '17:55', end: '18:05',
+      type: 'ending',
+      timing: 'estimated',
+      timingNote: 'FULLY ESTIMATED — no duration supplied. 10 min is a guess.',
       whatsHappening:
-        "Sponsors formally introduce draft resolutions to the floor ahead of the submission deadline. Canada should present with the PSR-cut admission already priced in from the morning session, so it reads as consistent rather than a defensive reaction to an attack."
+        'FINLAND moves to adjourn. Requires a TWO-THIRDS majority (not simple majority).',
     },
-    {
-      id: "resolution-deadline-marker",
-      name: "*** DRAFT RESOLUTION SUBMISSION DEADLINE ***",
-      start: "16:00",
-      end: "16:00",
-      type: "deadline",
-      whatsHappening:
-        "Hard cutoff. No new draft resolutions accepted after this point — only amendments to resolutions already on the floor. This is the countdown target."
-    },
-    {
-      id: "formal-debate-2",
-      name: "Formal Debate — Amendments & Voting Procedure",
-      start: "16:00",
-      end: "17:00",
-      type: "formal debate",
-      whatsHappening:
-        "Floor debate on amendments to submitted draft resolutions, followed by voting bloc procedure. Canada should expect amendment attempts from Russia/China targeting any language that implies intervention-related causation, and should be ready to accept friendly amendments from Host Countries that strengthen the funding mechanism's credibility without diluting it."
-    },
-    {
-      id: "ending",
-      name: "Closing / Voting Results / Adjournment",
-      start: "17:00",
-      end: "17:30",
-      type: "ending",
-      whatsHappening:
-        "Final vote results announced, closing remarks, dais adjourns Day 2. Confirm whether unresolved business carries to a subsequent day per your specific ASMUN structure."
-    }
-  ]
+  ],
 };
 
 export default schedule;
