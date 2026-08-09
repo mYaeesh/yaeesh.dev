@@ -3,7 +3,7 @@
 // Shows once per browser session (sessionStorage, not localStorage) — a
 // reload later in the same session goes straight to the toolkit.
 
-import { trivia } from '../../data/trivia.js?v=8';
+import { trivia } from '../../data/trivia.js?v=10';
 
 const STORAGE_KEY = 'asmun-welcome-shown';
 const INERT_SELECTORS = '.skip-link, .site-header, .shell, .tab-bar';

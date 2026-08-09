@@ -9,9 +9,9 @@
 // isn't in blocs.js still renders, under its raw id, so a typo is visible rather than
 // silently dropping questions off the page.
 
-import { questions, questionGroupBlocIds } from '../../data/questions.js?v=8';
-import { blocs } from '../../data/blocs.js?v=8';
-import { el, mountSection, highlight, groupBy } from '../modules/render.js?v=8';
+import { questions, questionGroupBlocIds } from '../../data/questions.js?v=10';
+import { blocs } from '../../data/blocs.js?v=10';
+import { el, mountSection, highlight, groupBy } from '../modules/render.js?v=10';
 
 const blocNameById = new Map(blocs.map((b) => [b.id, b.name]));
 const blocName = (id) => blocNameById.get(id) ?? `${id} (unknown bloc id)`;
@@ -32,6 +32,12 @@ function questionCard(item, ctx) {
       ? el('p', { class: 'question-card__target' }, [
           el('span', { class: 'question-card__target-label', text: 'Ask' }),
           highlight(item.target, q),
+          // The research pack's own bloc prediction. Deliberately not called `group`:
+          // the spread above tags every item with `group` from its object key, which
+          // would overwrite this and drop the prediction silently.
+          item.predictedGroup
+            ? el('span', { class: 'question-card__predicted' }, [highlight(item.predictedGroup, q)])
+            : null,
         ])
       : null,
     el('p', { class: 'question-card__q' }, [highlight(item.question, q)]),
@@ -80,7 +86,7 @@ export function initQuestions() {
     searchIndex: (item) => ({
       title: `${item.target ?? ''} — ${blocName(item.targetBloc)}`,
       snippet: item.question,
-      keywords: item.goal,
+      keywords: `${item.goal} ${item.predictedGroup ?? ''}`,
     }),
   });
 }

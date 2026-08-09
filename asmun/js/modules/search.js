@@ -9,7 +9,7 @@
 // Every hit is labelled with the section it came from, and the matched substring is
 // wrapped in <mark>. Enter jumps to that section and flashes the matching card.
 
-import { getRegisteredSections, el, highlight } from './render.js?v=8';
+import { getRegisteredSections, el, highlight } from './render.js?v=10';
 
 const DEBOUNCE_MS = 80;
 const PER_SECTION_CAP = 6;

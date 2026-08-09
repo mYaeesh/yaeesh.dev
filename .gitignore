@@ -1,0 +1,16 @@
+# Private research notes. NEVER commit these.
+#
+# /knowledge/ holds honest strategic vulnerabilities and the weakest rebuttals —
+# material that must not be readable by anyone else in the committee. The site is
+# served publicly by GitHub Pages from this repo, and the github.io origin is not
+# behind Cloudflare Access, so anything committed here is world-readable.
+#
+# These files previously sat at asmun/knowledge/, inside the published directory.
+# They were never committed. They now live at the repo root, outside /asmun/, and
+# are ignored here so they cannot be added back by accident.
+/knowledge/
+
+# Browser-verification artifacts, written to the repo root by the Playwright run
+# that checks the rendered site. Evidence, not source — regenerate them, don't commit them.
+/.playwright-mcp/
+/*.png

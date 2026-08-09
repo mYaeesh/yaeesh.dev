@@ -7,8 +7,8 @@
 // Each card also carries the two things you actually need under pressure: how to
 // USE the fact, and the CAVEAT an opposing delegate will reach for.
 
-import { facts } from '../../data/facts.js?v=8';
-import { el, mountSection, highlight } from '../modules/render.js?v=8';
+import { facts } from '../../data/facts.js?v=10';
+import { el, mountSection, highlight } from '../modules/render.js?v=10';
 
 /** Anything not explicitly "yes"/"partially" is treated as unverified — fail loud. */
 function statusOf(fact) {
