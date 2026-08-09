@@ -1,8 +1,8 @@
 // ASMUN — sections/blocs.js
 // Bloc map. Short/detailed toggle plus an in-section filter; both views searchable.
 
-import { blocs } from '../../data/blocs.js?v=10';
-import { el, mountSection, highlight } from '../modules/render.js?v=10';
+import { blocs } from '../../data/blocs.js?v=11';
+import { el, mountSection, highlight } from '../modules/render.js?v=11';
 
 /** Everything about a bloc, flattened, so the filter searches detail text too. */
 function blocText(bloc) {

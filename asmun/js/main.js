@@ -2,22 +2,22 @@
 // Boot order matters: every section must mount before initSearch() runs, because
 // mountSection() is what registers a section's items with the global search index.
 
-import { initThemeToggle } from './modules/theme.js?v=10';
-import { initActiveNav } from './modules/nav.js?v=10';
-import { initSearch } from './modules/search.js?v=10';
-import { initTooltips } from './modules/tooltips.js?v=10';
-import { initWelcome } from './modules/welcome.js?v=10';
+import { initThemeToggle } from './modules/theme.js?v=11';
+import { initActiveNav } from './modules/nav.js?v=11';
+import { initSearch } from './modules/search.js?v=11';
+import { initTooltips } from './modules/tooltips.js?v=11';
+import { initWelcome } from './modules/welcome.js?v=11';
 
-import { initAgenda } from './sections/agenda.js?v=10';
-import { initBlocs } from './sections/blocs.js?v=10';
-import { initGlossary } from './sections/glossary.js?v=10';
-import { initFacts } from './sections/facts.js?v=10';
-import { initQuestions } from './sections/questions.js?v=10';
-import { initAllies } from './sections/allies.js?v=10';
-import { initRoster } from './sections/roster.js?v=10';
-import { initSpeeches } from './sections/speeches.js?v=10';
-import { initPhrases } from './sections/phrases.js?v=10';
-import { initClauses } from './sections/clauses.js?v=10';
+import { initAgenda } from './sections/agenda.js?v=11';
+import { initBlocs } from './sections/blocs.js?v=11';
+import { initGlossary } from './sections/glossary.js?v=11';
+import { initFacts } from './sections/facts.js?v=11';
+import { initQuestions } from './sections/questions.js?v=11';
+import { initAllies } from './sections/allies.js?v=11';
+import { initRoster } from './sections/roster.js?v=11';
+import { initSpeeches } from './sections/speeches.js?v=11';
+import { initPhrases } from './sections/phrases.js?v=11';
+import { initClauses } from './sections/clauses.js?v=11';
 
 initThemeToggle();
 

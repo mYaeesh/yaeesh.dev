@@ -6,8 +6,8 @@
 // hidden — knowing which verb sinks a text is the point of the table. The strength value drives a
 // modifier class so the strongest ones read as a warning rather than a recommendation.
 
-import { clauses, clauseNotes } from '../../data/clauses.js?v=10';
-import { el, mountSection, highlight, groupBy } from '../modules/render.js?v=10';
+import { clauses, clauseNotes } from '../../data/clauses.js?v=11';
+import { el, mountSection, highlight, groupBy } from '../modules/render.js?v=11';
 
 const KIND_LABEL = {
   preambulatory: 'Preambulatory starters',

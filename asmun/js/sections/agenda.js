@@ -26,8 +26,8 @@
 // states can be previewed without waiting for the conference. Documented in
 // data/schedule.js. Without it, the real clock is used.
 
-import { schedule } from '../../data/schedule.js?v=10';
-import { el, mountSection, highlight, groupBy } from '../modules/render.js?v=10';
+import { schedule } from '../../data/schedule.js?v=11';
+import { el, mountSection, highlight, groupBy } from '../modules/render.js?v=11';
 
 const SECOND = 1000;
 

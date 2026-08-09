@@ -4,8 +4,8 @@
 // fits — and the rebuttal template's three fill-in slots are marked so you can see at a glance
 // how much of it you still have to improvise.
 
-import { speeches, timingRule } from '../../data/speeches.js?v=10';
-import { el, mountSection, highlight } from '../modules/render.js?v=10';
+import { speeches, timingRule } from '../../data/speeches.js?v=11';
+import { el, mountSection, highlight } from '../modules/render.js?v=11';
 
 function speechCard(item, ctx) {
   const q = ctx.query;

@@ -20,8 +20,8 @@
 // Unscored entries therefore get a hollow hatched track, an "UNSCORED" chip instead of a
 // number, and are held out of the ranked list entirely in a collapsed <details> group.
 
-import { allies, allyCounts } from '../../data/allies.js?v=10';
-import { el, mountSection, highlight } from '../modules/render.js?v=10';
+import { allies, allyCounts } from '../../data/allies.js?v=11';
+import { el, mountSection, highlight } from '../modules/render.js?v=11';
 
 const MAX_SCORE = 10;
 

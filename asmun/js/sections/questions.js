@@ -9,9 +9,9 @@
 // isn't in blocs.js still renders, under its raw id, so a typo is visible rather than
 // silently dropping questions off the page.
 
-import { questions, questionGroupBlocIds } from '../../data/questions.js?v=10';
-import { blocs } from '../../data/blocs.js?v=10';
-import { el, mountSection, highlight, groupBy } from '../modules/render.js?v=10';
+import { questions, questionGroupBlocIds } from '../../data/questions.js?v=11';
+import { blocs } from '../../data/blocs.js?v=11';
+import { el, mountSection, highlight, groupBy } from '../modules/render.js?v=11';
 
 const blocNameById = new Map(blocs.map((b) => [b.id, b.name]));
 const blocName = (id) => blocNameById.get(id) ?? `${id} (unknown bloc id)`;

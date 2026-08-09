@@ -6,8 +6,8 @@
 // Filtering here matches on the phrase text and its note, so searching "yield" finds both the
 // yielding group and the yield-time line buried in the POI group.
 
-import { phrases, poiRule } from '../../data/phrases.js?v=10';
-import { el, mountSection, highlight, groupBy } from '../modules/render.js?v=10';
+import { phrases, poiRule } from '../../data/phrases.js?v=11';
+import { el, mountSection, highlight, groupBy } from '../modules/render.js?v=11';
 
 function phraseGroupCard(group, ctx) {
   const q = ctx.query;

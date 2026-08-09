@@ -8,8 +8,8 @@
 // treatment (strike-through / dashed edge / red edge) so the difference is obvious at a
 // glance and does not live only in a tooltip.
 
-import { roster, rosterCounts } from '../../data/roster.js?v=10';
-import { el, mountSection, highlight } from '../modules/render.js?v=10';
+import { roster, rosterCounts } from '../../data/roster.js?v=11';
+import { el, mountSection, highlight } from '../modules/render.js?v=11';
 
 const BLANK = '—';
 

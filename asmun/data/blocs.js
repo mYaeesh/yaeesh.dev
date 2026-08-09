@@ -137,7 +137,7 @@ export const blocs = [
   },
   {
     id: 'unassessed',
-    name: '⚠ PLACEHOLDER — Not yet assessed (39 delegations)',
+    name: '⚠ No bloc analysis written (39 delegations)',
     isPlaceholder: true,
     members: [
       'Afghanistan', 'Belarus', 'Belgium', 'Brazil', 'Chile', 'DR Congo', 'Egypt', 'Eritrea',
@@ -148,8 +148,10 @@ export const blocs = [
     ],
     canadaRole: '⚠ PLACEHOLDER — not yet decided',
     summary:
-      '⚠ PLACEHOLDER — NO ANALYSIS WRITTEN. These 39 delegations are in the real committee and have no ' +
-      'strategic read at all. That is 39 of 51 — the clear majority of the room. Nothing here is ' +
+      '⚠ NO BLOC ANALYSIS WRITTEN. These 39 delegations are in the real committee and have no ' +
+      'bloc-level read: no shared position, no fault lines, no line of attack. Each one does now have ' +
+      'an individual ally score and a question of its own — what is missing is how they move together. ' +
+      'That is 39 of 51 — the clear majority of the room. Nothing here is ' +
       'inferred or guessed. PRIORITY ORDER: (1) Uganda — motions the unmoderated caucus. (2) Finland — ' +
       'moves to adjourn, needs two-thirds. (3) Ukraine and Syria — both displaced by a delegation ' +
       'seated opposite them. (4) Afghanistan — directly affected by the Pakistan deportation line. ' +
